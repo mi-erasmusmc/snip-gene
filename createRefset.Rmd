@@ -1,0 +1,192 @@
+---
+title: "Create a reference set"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Introduction
+
+One of the assumptions in our paper is that genes that are targets of SNPs are differentially expressed.
+Here, I load the known gene targets of the prostate-cancer associated SNP's, as well as the results of a next generation sequencing (NGS) experiment, to examine their overlap.  
+
+# Load required packages
+
+```{r, message = F, results = "hide"}
+require(lattice)
+knitr::opts_chunk$set(fig.width=12, fig.height=12) 
+```
+
+# Load the datasets
+
+## Genes targeted by SNPs
+
+I use two sets 1) the genes mentioned in the bodies of the manuscripts of [Farashi](https://www.ncbi.nlm.nih.gov/pubmed/30538273) and [Hazelett](https://www.ncbi.nlm.nih.gov/pubmed/24497837), and 2) the genes mentioned in the Supplemental Materials 1 of Farashi. 
+
+
+With the supplemental materials genes, it is mentioned where the SNP is approximately located with regards to the gene.
+Based on that information, I filter out all SNPs that are within the protein-coding region of the gene.
+
+```{r}
+SNP_filter = c("missense", "Coding region", "exonic")
+farashi = read.delim("Reference sets/Farashi SM1 genes.txt", stringsAsFactors = F, header = F)
+farashi = unique(farashi)
+
+# Complete set
+farashi_all = unlist(lapply(farashi$V2, function(x){strsplit(x, ";")})) # Split up the multiple genes per line
+farashi_all = unlist(lapply(farashi_all, function(x){strsplit(x, ", ")})) # Split up the multiple genes per line
+farashi_all = gsub(" ", "", farashi_all) # Remove any remaining white spaces
+farashi_all = unique(farashi_all)
+
+# Subset where SNP's on coding regions are filtered out
+farashi_subset = unlist(lapply(farashi$V2[!farashi$V1 %in% SNP_filter], function(x){strsplit(x, ";")})) # Split up the multiple genes per line
+farashi_subset = unlist(lapply(farashi_subset, function(x){strsplit(x, ", ")})) # Split up the multiple genes per line
+farashi_subset = gsub(" ", "", farashi_subset) # Remove any remaining white spaces
+farashi_subset = unique(farashi_subset)
+```
+
+Removing SNPs on protein-coding regions of the genome results in `r length(farashi_all) - length(farashi_subset)` genes being removed from the reference set.
+These genes are listed below: 
+
+`r setdiff(farashi_all, farashi_subset)`
+
+We will continue to work with the genes which are targeted by SNPs which are not on the protein coding region. 
+
+To this set, I add the genes from the tables in the manuscript of Hazelett and Farashi. 
+
+```{r}
+mansucript_tables = read.csv("Reference sets/RefSet Farashi and Hazelett Small.csv", stringsAsFactors = F, header = F)
+refset = unique(c(farashi_subset, mansucript_tables$V1))
+```
+
+In total, the constructed reference set consist of `r length(refset)` unique genes (each of which can be targeted by multiple SNPs). 
+
+## Next-generation sequencing data
+
+First, I load the NGS data that Youri Hoogstraate sent me. 
+These data are based on the ProToCol data, which were used as a validation set in a recent [Cell publication](https://www.ncbi.nlm.nih.gov/pubmed/30735634), and should be high quality.
+The gene expression values in this set are based on 41 normal prostate tissue samples, and 51 prostate cancer tissue samples.
+
+I add a column for the logFC data, to transform it back to its original values.
+Furthermore, the Ensembl identifiers have a dot and some additional numbers behind them, which I remove to make it interoperable with the Ensembl data I load later.
+
+```{r load the dataset}
+ngs = read.delim("GeneExpressionData/Galaxy37-[edgeR_DGE_on_2__design_matrix_prostate_unpaired.txt_-_differentially_expressed_genes].tabular.annotated.txt", stringsAsFactors = F, row.names = 1)
+colnames(ngs) = c("Ensembl_ID", "Gene_Symbol", "log2FC", "log2CPM", "LR", "PValue", "FDR")
+
+ngs$FC = 2^ngs$log2FC
+ngs$Ensembl_ID_no_Dot = sapply(ngs$Ensembl_ID, function(x){return(unlist(strsplit(x, "\\."))[1])})
+```
+
+In total, this NGS data describes `r length(unique(ngs$Gene_Symbol))` RNA-sequences. 
+I extract the protein-coding genes from the Ensembl biomart tool to create a subset of protein-coding genes. 
+
+```{r protein coding genes}
+protein_coding_genes = read.csv("GeneExpressionData/ensembl biomart_export protein coding genes 04-04-2019.txt", stringsAsFactors = F)
+ngs_pc = ngs[ngs$Ensembl_ID_no_Dot %in% protein_coding_genes$Gene.stable.ID, ]
+```
+
+When only including the protein coding RNA-sequences, there are `r length(unique(ngs_pc$Gene_Symbol))` RNA-sequences left. 
+
+# Fixing gene symbols between the refset and the NGS data
+
+Unfortunately, some of the gene symbols that are used in the reference set do not concur with the gene symbols in the NGS data. 
+In the following steps I manually fix this (More extensive documentation is available upon request).
+
+```{r}
+refset[refset %in% c("MSMB1", "MSMB2")] = "MSMB"
+refset[refset == "NCOA4-1"] = "NCOA4P1"
+refset[refset == "NCOA4-3"] = "NCOA4P3"
+refset[refset == "ANKRD5"] = "ANKEF1"
+refset[refset == "C6orf228"] = "SMIM13"
+refset[refset == "c-MYC"] = "MYC"
+refset[refset == "HoxB13"] = "HOXB13"
+refset[refset == "LASS2"] = "CERS2"
+refset[refset == "C10orf32"] = "BORCS7"
+refset[refset == "LOC100505761"] = "RPARP-AS1"
+refset[refset == "LOC100505495"] = "PCAT19"
+refset[refset == "WDR52"] = "CFAP44"
+refset[refset == "HCG4P6"] = "HCG4B"
+refset[refset = "LOC285830"] = "HLA-F-AS1"
+refset[refset == "RAB7L1"] = "RAB29"
+refset[refset = "LOC284578"] = "MFSD4A-AS1"
+refset[refset == "AGAP7"] = "AGAP7P"
+refset[refset == "C2orf43"] = "LDAH"
+```
+
+After this mapping step, `r length(setdiff(refset, ngs$Gene_Symbol))` genes from the reference set are missing from the complete NGS data, and `r length(setdiff(refset, ngs_pc$Gene_Symbol))` genes from the protein-coding NGS data. 
+
+For the complete NGS data, these are `r setdiff(refset, ngs$Gene_Symbol)`.
+
+For the protein-coding NGS data, these are `r setdiff(refset, ngs_pc$Gene_Symbol)`.
+
+We remove these genes from the reference sets. 
+
+```{r}
+refset = intersect(refset, ngs$Gene_Symbol)
+refset_pc = intersect(refset, ngs_pc$Gene_Symbol)
+```
+
+# Setting cutoffs on the NGS data
+
+Not all genes in the NGS data were measured reliably, nor were they always differentially expressed.
+To determine the reliability of the measurement, I use the False Discovery Rate (FDR), as suggested by Youri Hoogstraate, and to determine the differential expression, I use the absolute Fold Change (FC), so not the untransformed 2log data that was originally available in the NGS data.
+
+The FC values in the plot should be read as the difference from 1.
+So the value 0.5 means that the fold change should be smaller than 1 - 0.5, or larger than 1 + 0.5.
+
+I create a plot for both the protein-coding subset, as well as the complete set. 
+
+```{r}
+cutoffs = 0.1^(0:25)
+foldchanges = seq(0, 1, 0.05)
+
+counts = expand.grid(cutoffs, foldchanges)
+colnames(counts) = c("cutoff", "fold.change")
+
+for(i in 1:nrow(counts)){
+  counts[i, "All"] = length(intersect(ngs$Gene_Symbol[ngs$FDR <= counts$cutoff[i] & (ngs$FC >= 1 + counts$fold.change[i] | ngs$FC < 1 - counts$fold.change[i])], refset))
+  counts[i, "Protein.coding"] = length(intersect(ngs_pc$Gene_Symbol[ngs_pc$FDR <= counts$cutoff[i] & (ngs_pc$FC >= 1 + counts$fold.change[i] | ngs_pc$FC < 1 - counts$fold.change[i])], refset))
+}
+```
+
+First, I plot the wireframe for the complete set. 
+
+```{r, echo = F}
+wireframe(All ~ fold.change*log10(cutoff), 
+          data = rev(counts), 
+          screen = list(z = -60, x = -60), 
+          drape = T, 
+          par.settings = list(axis.line = list(col = "transparent"), box.3d = list(col=c(1,NA,NA,1,1,NA,1,1,1))), 
+          scales=list(arrows = F, col = 1), 
+          ylab = "False Discovery\n Rate cutoff (10log)", 
+          xlab = "Fold\n change\n cutoff", 
+          zlab = "Count", 
+          main = "Number of genes in the refset\n at various cutoffs from the NGS data") 
+```
+
+Next, I plot the wireframe for the protein-coding genes only. 
+
+```{r, echo = F}
+wireframe(Protein.coding ~ fold.change*log10(cutoff), 
+          data = rev(counts), 
+          screen = list(z = -60, x = -60), 
+          drape = T, 
+          par.settings = list(axis.line = list(col = "transparent"), box.3d = list(col=c(1,NA,NA,1,1,NA,1,1,1))), 
+          scales=list(arrows = F, col = 1), 
+          ylab = "False Discovery\n Rate cutoff (10log)", 
+          xlab = "Fold\n change\n cutoff", 
+          zlab = "Count", 
+          main = "Number of genes in the refset\n at various cutoffs from the NGS data (protein coding only)") 
+```
+
+As can be seen, setting any kind of cutoff on the NGS data with either the FC or the FDR drastically reduces the number of genes that are in the refset, for either the protein-coding or complete.
+To provide some examples: Setting a FDR cutoff of 0.1, and no cutoff for the FC results in `r counts[counts$cutoff == 0.1 & counts$fold.change == 0, "All"]` genes in the refset of the complete set, and `r counts[counts$cutoff == 0.1 & counts$fold.change == 0, "Protein.coding"]` in the protein coding subset. 
+
+If we perform a similar exercise by setting a minimal cutoff for the fold change of 0.05 (so only values below 0.95 or above 1.05), and no cutoff for the FDR, we are left with `r counts[counts$cutoff == 1 & counts$fold.change == 0.05, "All"]` genes for the complete set, and `r counts[counts$cutoff == 1 & counts$fold.change == 0.05, "Protein.coding"]` genes for the protein-coding set. 
+
+This indicates that about a third of the genes in the refset, which excluded SNPs on the protein-coding parts of the gene, are not remotely significantly differentially expressed in the ProToCol data. 
+
+This is directly contradictory with the remarks of Farashi and Hazelett in their manuscripts, and one of the assumptions I built my method upon. 
+
+Could we discuss this some time, to see how it impacts the research and how we should proceed?
