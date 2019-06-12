@@ -1,0 +1,8 @@
+calculateAnew : F
+getFromKG : F
+generatePredicateFeatures : F
+recalculateNetwork : F
+long : F
+getSNPDataFromWeb : F
+diffGenesOnly : T
+onlySelectNegatives : T
