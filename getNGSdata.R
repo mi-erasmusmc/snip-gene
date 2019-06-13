@@ -2,11 +2,10 @@
 require(httr)
 require(rjson)
 
-if(calculateAnew){
+if(config$calculateAnew){
   # Parameters
   fold_change_cutoff = 0.1
   FDR_cutoff = 0.01
-  proteinOnly = F
   
   # Select the relevant genes
   ngs = read.csv("GeneExpressionData/Galaxy37-[edgeR_DGE_on_2__design_matrix_prostate_unpaired.txt_-_differentially_expressed_genes].tabular.annotated.txt", 
@@ -25,7 +24,7 @@ if(calculateAnew){
   diff_genes = ngs[ngs$FDR <= FDR_cutoff & (ngs$FC <= 1 - fold_change_cutoff | ngs$FC >= 1 + fold_change_cutoff), ]
   diff_genes$EKP_ID = NA
   
-  if(proteinOnly){
+  if(config$proteinOnly){
     diff_genes = diff_genes[diff_genes$Gene.type == "protein_coding", ]
   }
   diff_genes$diff_expression = ifelse(diff_genes$FC > 1, "Upregulated", "Downregulated")
@@ -47,5 +46,5 @@ if(calculateAnew){
   diff_genes = diff_genes[!is.na(diff_genes$EKP_ID), ]
   write.csv2(diff_genes, paste0("Raw data files/Expressed genes and their differentiality ", Sys.Date(), ".csv"), row.names = F)
 } else {
-  diff_genes = read.csv2("Raw data files/Expressed genes and their differentiality 2019-06-12.csv", stringsAsFactors = F)
+  diff_genes = read.csv2(paste0("Raw data files/Expressed genes and their differentiality ", config$Data.date, ".csv"), stringsAsFactors = F)
 }

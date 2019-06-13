@@ -1,7 +1,7 @@
 # Create the features that are based on the direct and the predicates from the direct and the indirect relationships
 require(data.table)
 
-if(generatePredicateFeatures){
+if(config$generatePredicateFeatures){
   # Specify the undirected predicates
   undirected_predicates = c("interacts with", 
                             "forms protein complex with", 
@@ -94,5 +94,5 @@ if(generatePredicateFeatures){
   
   fwrite(pred_features, paste0("Raw data files/Predicate features generated on ", Sys.Date(), ".csv"))
 } else {
-  pred_features = as.data.frame(fread("Raw data files/Predicate features generated on 2019-06-12.csv"))
+  pred_features = as.data.frame(fread(paste0("Raw data files/Predicate features generated on ", config$Data.date, ".csv")))
 }

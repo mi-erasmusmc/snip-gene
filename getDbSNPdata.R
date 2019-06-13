@@ -10,7 +10,7 @@ farashi_xls = read.xlsx("Reference sets/41568_2018_87_MOESM1_ESM-3.xls", sheetNa
 farashi = farashi_xls[,c(1,3,4,5,7)]
 farashi = farashi[!is.na(farashi$SNP.s.Genomic.Location) & !is.na(farashi$Target.assigned.e.Gene), ]
 
-if(getSNPDataFromWeb){
+if(config$getSNPDataFromWeb){
   require(rsnps)
   
   # Remove entries withouth rs identifier
@@ -26,9 +26,9 @@ if(getSNPDataFromWeb){
     Sys.sleep(1)
   }
   
-  write.csv2(out, paste0("Reference sets/SNP info Farashi et al. Supplemental Materials 1 retrieved on ", Sys.Date(), ".csv"), row.names = F)
+  write.csv2(out, paste0("Raw data files/SNP info Farashi et al. Supplemental Materials 1 retrieved on ", Sys.Date(), ".csv"), row.names = F)
 } else {
-  out = read.csv2("Reference sets/SNP info Farashi et al. Supplemental Materials 1 retrieved on 2019-05-28.csv", stringsAsFactors = F)
+  out = read.csv2(paste0("Raw data files//SNP info Farashi et al. Supplemental Materials 1 retrieved on ", config$Data.date, ".csv"), stringsAsFactors = F)
 }
 
 # Modify farashi
@@ -71,6 +71,12 @@ farashi_final = unique(farashi_final)
 farashi_final = as.data.frame(apply(farashi_final, 2, trimws))
 
 # Remove entries which are based on a single eQTL study
-farashi_final = farashi_final[!farashi_final$reference %in% c("Dadaev T. et al. 2018", "Grisanzio, C. et al.  2012", "X. xu et al. 2014", "Thibodeau S.N.  et al. 2015"), ]
+farashi_final = farashi_final[!farashi_final$reference %in% c("Dadaev T. et al. 2018",
+                                                              "Grisanzio, C. et al.  2012",
+                                                              "X. xu et al. 2014",
+                                                              "Thibodeau S.N.  et al. 2015"), ]
 
-farashi_final = merge(farashi_final, out, by.x = "SNP.ID", by.y = "Query", all = T)
+farashi_final = farashi_final[farashi_final$SNP.s.Genomic.Location %in% c("Coding region",
+                                                                          "exonic"), ]
+
+farashi_final = merge(farashi_final, out, by.x = "SNP.ID", by.y = "Query")

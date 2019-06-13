@@ -13,7 +13,7 @@ features = merge(features, network_features, by.x = "EKP_Name", by.y = "Gene", a
 features = merge(features, pred_features, by = "EKP_ID", all.x = T)
 features = merge(features, process_matrix, by.x = "EKP_ID", by.y = "row.names", all.x = T)
 
-if(onlySelectNegatives){
+if(config$onlySelectNegatives){
   features = features[features$Name %in% c(as.character(combined$Target_Gene), negatives), ]
 }
 if(length(which(is.na(features))) > 0){

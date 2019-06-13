@@ -6,7 +6,7 @@ require(igraph)
 require(data.table)
 require(rjson)
 
-if(getFromKG){
+if(config$getFromKG){
   # Extract the triples from the knowledge graph
   ## Set up the database connection
   triples = mongo(url = "mongodb://lagavulin:30017", db = "braindata", collection = "triples") 
@@ -55,12 +55,13 @@ if(getFromKG){
   # Shut down the connection
   triples$disconnect()
   concepts$disconnect()
+  if(config$saveTriples){
+    rels[,c("a", "m")] = NULL #Eruit gehaald vanwege de write, maar misschien in de toekomst erin laten?
   
-  rels[,c("a", "m")] = NULL #TODO: Eruit gehaald vanwege de fwrite, maar misschien in de toekomst erin laten?
-  
-  fwrite(rels, file = paste0("Raw data files/Triples extracted from the knowledge graph on ", Sys.Date(), ".csv"), verbose = T, sep = ";")
-  fwrite(as.data.frame(as.matrix(process_matrix)), paste0("Raw data files/Process matrix extracted from the knowledge graph on ", Sys.Date(), ".csv"), sep = ";")
+    fwrite(rels, file = paste0("Raw data files/Triples extracted from the knowledge graph on ", Sys.Date(), ".csv"), verbose = T, sep = ";")
+    fwrite(as.data.frame(as.matrix(process_matrix)), paste0("Raw data files/Process matrix extracted from the knowledge graph on ", Sys.Date(), ".csv"), sep = ";")
+  }
 } else {
-  rels = as.data.frame(fread("Raw data files/Triples extracted from the knowledge graph on 2019-06-11.csv"))
-  process_matrix = as.data.frame(fread("Raw data files/Process matrix extracted from the knowledge graph on 2019-06-11.csv"))
+  rels = as.data.frame(fread(paste0("Raw data files/Triples extracted from the knowledge graph on ", config$Data.date, ".csv")))
+  process_matrix = as.data.frame(fread(paste0("Raw data files/Process matrix extracted from the knowledge graph on", config$Data.date, ".csv")))
 }

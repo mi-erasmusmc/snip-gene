@@ -1,8 +1,12 @@
 calculateAnew : F
+proteinOnly : F
 getFromKG : F
+saveTriples : T
 generatePredicateFeatures : F
 recalculateNetwork : F
 long : F
 getSNPDataFromWeb : F
+deta_bp : 2000000
 diffGenesOnly : T
 onlySelectNegatives : T
+Data.date : "2019-06-14"

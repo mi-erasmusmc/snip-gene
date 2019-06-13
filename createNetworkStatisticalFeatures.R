@@ -4,7 +4,7 @@
 require(igraph)
 require(orca)
 
-if(recalculateNetwork){
+if(config$recalculateNetwork){
 long = config$long
   
   # Prepareer data voor count functie orca
@@ -50,5 +50,5 @@ long = config$long
   }
   write.csv2(network_features, paste0("Raw data files/Network metric features calculated on ", Sys.Date(), ".csv"), row.names = F)
 } else {
-  network_features = read.csv2("Raw data files/Network metric features calculated on 2019-06-12.csv", stringsAsFactors = F)
+  network_features = read.csv2(paste0("Raw data files/Network metric features calculated on ", config$Data.date, ".csv"), stringsAsFactors = F)
 }
