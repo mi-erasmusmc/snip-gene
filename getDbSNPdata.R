@@ -76,7 +76,7 @@ farashi_final = farashi_final[!farashi_final$reference %in% c("Dadaev T. et al. 
                                                               "X. xu et al. 2014",
                                                               "Thibodeau S.N.  et al. 2015"), ]
 
-farashi_final = farashi_final[farashi_final$SNP.s.Genomic.Location %in% c("Coding region",
+farashi_final = farashi_final[!farashi_final$SNP.s.Genomic.Location %in% c("Coding region",
                                                                           "exonic"), ]
 
 farashi_final = merge(farashi_final, out, by.x = "SNP.ID", by.y = "Query")
