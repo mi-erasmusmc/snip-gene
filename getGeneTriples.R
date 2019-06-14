@@ -56,10 +56,11 @@ if(config$getFromKG){
   triples$disconnect()
   concepts$disconnect()
   if(config$saveTriples){
-    rels[,c("a", "m")] = NULL #Eruit gehaald vanwege de write, maar misschien in de toekomst erin laten?
-  
-    fwrite(rels, file = paste0("Raw data files/Triples extracted from the knowledge graph on ", Sys.Date(), ".csv"), verbose = T, sep = ";")
-    fwrite(as.data.frame(as.matrix(process_matrix)), paste0("Raw data files/Process matrix extracted from the knowledge graph on ", Sys.Date(), ".csv"), sep = ";")
+    rels$a = NULL #Eruit gehaald vanwege de write, maar misschien in de toekomst erin laten?
+    rels$m = NULL #Eruit gehaald vanwege de write, maar misschien in de toekomst erin laten?
+    
+    fwrite(rels, file = paste0("Raw data files/Triples extracted from the knowledge graph on ", todays_date, ".csv"), sep = ";")
+    fwrite(as.data.frame(as.matrix(process_matrix)), paste0("Raw data files/Process matrix extracted from the knowledge graph on ", todays_date, ".csv"), sep = ";")
   }
 } else {
   rels = as.data.frame(fread(paste0("Raw data files/Triples extracted from the knowledge graph on ", config$Data.date, ".csv")))

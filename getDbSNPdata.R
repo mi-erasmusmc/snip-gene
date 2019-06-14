@@ -16,20 +16,27 @@ if(config$getSNPDataFromWeb){
   # Remove entries withouth rs identifier
   farashi = farashi[-grep("chr", farashi$SNP.ID), ]
   
-  snps = unique(farashi$SNP.ID)
+  snps = trimws(unique(farashi$SNP.ID))
   snps = gsub("_C", "", snps)
   snps = gsub("_A", "", snps)
-  out = data.frame()
-  for(i in seq_along(snps)){
-    snp_position = ncbi_snp_query(snps[i])
-    out = rbind(out, snp_position)
+  out = data.frame(Query = snps, Chromosome = NA, Marker = NA, Class = NA, Gene = NA, 
+                   Alleles = NA, Major = NA, Minor = NA, MAF = NA, BP = NA, AncestralAllele = NA, 
+                   stringsAsFactors = F)
+  for(i in 1:nrow(out)){
+    snp_position = ncbi_snp_query(out$Query[i])
+    if(nrow(snp_position) > 0){
+      out[i,] = snp_position
+    }
     Sys.sleep(1)
   }
   
-  write.csv2(out, paste0("Raw data files/SNP info Farashi et al. Supplemental Materials 1 retrieved on ", Sys.Date(), ".csv"), row.names = F)
+  write.csv2(out, paste0("Raw data files/SNP info Farashi et al. Supplemental Materials 1 retrieved on ", todays_date, ".csv"), row.names = F)
 } else {
   out = read.csv2(paste0("Raw data files//SNP info Farashi et al. Supplemental Materials 1 retrieved on ", config$Data.date, ".csv"), stringsAsFactors = F)
 }
+
+# Remove the SNPs that don't have a location
+out = out[!is.na(out$BP), ]
 
 # Modify farashi
 farashi$Target.assigned.e.Gene = gsub("_(PSA)", "", farashi$Target.assigned.e.Gene)
@@ -76,7 +83,7 @@ farashi_final = farashi_final[!farashi_final$reference %in% c("Dadaev T. et al. 
                                                               "X. xu et al. 2014",
                                                               "Thibodeau S.N.  et al. 2015"), ]
 
-farashi_final = farashi_final[farashi_final$SNP.s.Genomic.Location %in% c("Coding region",
-                                                                          "exonic"), ]
+farashi_final = farashi_final[!farashi_final$SNP.s.Genomic.Location %in% c("Coding region",
+                                                                           "exonic"), ]
 
 farashi_final = merge(farashi_final, out, by.x = "SNP.ID", by.y = "Query")

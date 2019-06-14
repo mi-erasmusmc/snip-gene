@@ -5,8 +5,7 @@ require(igraph)
 require(orca)
 
 if(config$recalculateNetwork){
-long = config$long
-  
+
   # Prepareer data voor count functie orca
   nodes = data.frame(Gene = unique(c(rels$sn, rels$on)))
   nodes$ID = 1:nrow(nodes)
@@ -18,7 +17,7 @@ long = config$long
   undirected_edges = merge(undirected_edges, nodes, by.x = "V1", by.y = "Gene")
   
   # Identificeer graphlets conform Hocevar en Demsar
-  if(!long){
+  if(!config$long){
     graphlets = as.data.frame(count4(undirected_edges[,c("ID.x", "ID.y")]))
   } else {
     graphlets = as.data.frame(count5(undirected_edges[,c("ID.x", "ID.y")]))
@@ -42,13 +41,13 @@ long = config$long
   
   network_features = merge(network_features, ppi_clusters, by = "Gene", all = T)
   
-  if(long){
+  if(config$long){
     betweenness_clusters = cluster_edge_betweenness(ppi_undirected) # Duurt ook lang, maar is wel relevant (zie publicatie)
     ppi_clusters2 = data.frame(Gene = as.vector(V(g)), Betweenness_cluster = betweenness_clusters$membership)
     ppi_clusters2$Betweenness_cluster = paste0("Cluster_", ppi_clusters2$Betweenness_cluster)
     network_features = merge(network_features, ppi_clusters2, by = "Gene", all = T)
   }
-  write.csv2(network_features, paste0("Raw data files/Network metric features calculated on ", Sys.Date(), ".csv"), row.names = F)
+  write.csv2(network_features, paste0("Raw data files/Network metric features calculated on ", todays_date, ".csv"), row.names = F)
 } else {
   network_features = read.csv2(paste0("Raw data files/Network metric features calculated on ", config$Data.date, ".csv"), stringsAsFactors = F)
 }

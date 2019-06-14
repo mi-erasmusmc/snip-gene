@@ -21,5 +21,5 @@ if(length(which(is.na(features))) > 0){
 }
 features$Class = factor(ifelse(features$Name %in% as.character(combined$Target_Gene), "Target", "NonTarget"), levels = c("Target", "NonTarget"))
 
-fwrite(features, paste0("Raw data files/Complete feature set generated on ", Sys.Date(), ".csv"))
+fwrite(features, paste0("Raw data files/Complete feature set generated on ", todays_date, ".csv"))
 #refset = read.csv2("Reference sets/Genes from Farashi and Hazelett.csv", stringsAsFactors = F)

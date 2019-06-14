@@ -1,0 +1,117 @@
+---
+title: "Machine learning experiments"
+output: html_notebook
+author: "Wytze Vlietstra"
+date: '`r format(Sys.Date(), "%d-%m-%Y")`'
+---
+
+# Introduction
+
+To identify genes that are likely targets of SNPs we train a machine learning classifier.
+This notebook describes the experiments underlying the training and the analysis of the machine learning classifier.
+
+
+# Load dataset and required packages
+
+```{r package load, warning = F, message = F, results = "hide"}
+require(yaml)
+require(data.table)
+require(caret)
+require(ranger)
+require(e1071)
+require(pROC)
+require(PRROC)
+require(doMC)
+
+config = read_yaml("Execution_config.yml")
+registerDoMC(cores = config$coreCount)
+```
+
+```{r dataload}
+removalColumns = c("EKP_ID", "EKP_Name", "Name", "Gene.start..bp.", "Gene.end..bp.",
+                   "Chromosome.scaffold.name", "FC", "FDR", "diff_expression", "Class")
+
+f = as.data.frame(fread("Raw data files/Complete feature set generated on 2019-06-12.csv"))
+outcome = factor(f$Class, levels = c("Target", "NonTarget"))
+
+# Split up the dataset into features and non-features
+meta_data = f[,which(colnames(f) %in% removalColumns)]
+f = f[,-which(colnames(f) %in% removalColumns)]
+```
+
+Remove all infrequently occurring features
+```{r nonZero}
+nonZero = colSums(f != 0)
+f = f[,names(nonZero[nonZero > 4])]
+f2 = as.data.frame(f != 0)
+f2[,c(1:18)] = f[,c(1:18)]
+```
+
+# Analysis of the input data
+
+# Experiments
+
+Set the general parameters for the machine learning algorithms that will be used in this document.
+Only in specific experiments will the settings deviate.
+
+```{r ML settings}
+train_parameters = trainControl(method = "repeatedcv", number = 10, repeats = 10,
+                                classProbs = TRUE, savePredictions = TRUE, 
+                                summaryFunction = twoClassSummary, sampling = "down")
+```
+
+## Cross-validation performance
+```{r rf, message = F, warning = F, results = "hide"}
+model = train(y = outcome, x = f, method = "ranger", metric = "ROC", 
+              tuneGrid = data.frame(mtry = round(sqrt(ncol(f))), splitrule = "gini", min.node.size = 1),
+              save.memory = T,
+              trControl = train_parameters, importance = "impurity", num.trees = 1000)
+```
+
+### Alternative performance metrics
+
+Beside the ROC-AUC, we calculate several other performance metrics.
+For the performance metrics that require a cut-off value, we determine the optimal cut-off by optimizing the sensitivity and the specificity in the ROC-curve.
+
+```{r}
+confMat = confusionMatrix(model$results$pred, model$results$obs)
+
+```
+
+### Distribution of prediction scores
+
+### Distribution of misclassifications
+
+## Iteratively remove the most predictive features
+
+## Remove highly correlating features
+
+## Different ratios of positive and negative cases in the training set
+
+## Randomly assign outcome labels
+
+## Other classifiers
+
+### Linear regression
+
+```{r glm, message = F, warning = F, results = "hide", cache = T}
+model = train(y = outcome, x = f, method = "glm", metric = "ROC", 
+              trControl = train_parameters)
+```
+
+### Neural network
+
+```{r nnet, message = F, warning = F, results = "hide", cache = T}
+model = train(y = outcome, x = f, method = "svmRadial", metric = "ROC", 
+              trControl = train_parameters)
+```
+
+# Conclusions
+
+# R-version and package versions
+
+I used the following R-version and packages in these experiments:
+
+```{r, echo = F}
+sessionInfo()
+```
