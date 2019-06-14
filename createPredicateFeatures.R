@@ -18,10 +18,8 @@ if(config$generatePredicateFeatures){
   
   # Direct relationships
   outgoing = as.data.frame.matrix(table(rels$s[!rels$pn %in% undirected_predicates], rels$outgoing[!rels$pn %in% undirected_predicates]))
-  colnames(outgoing) = make.names(colnames(outgoing))
   incoming = as.data.frame.matrix(table(rels$o[!rels$pn %in% undirected_predicates], rels$incoming[!rels$pn %in% undirected_predicates]))
-  colnames(incoming) = make.names(colnames(incoming))
-  
+
   undirected_rels = rels[rels$pn %in% undirected_predicates, c("s", "o")]
   undirected_rels = as.data.frame(t(apply(undirected_rels, 1, sort)))
   undirected_rels$pn = rels[rels$pn %in% undirected_predicates, "pn"]
@@ -36,10 +34,11 @@ if(config$generatePredicateFeatures){
                                                         paste0(undirected_rels$pn, "_", undirected_rels$diff_expression_V1)))
   
   undirected = as.data.frame.matrix(table(undirected_with_expression$Gene, undirected_with_expression$predicate))
-  colnames(undirected) = make.names(colnames(undirected))
-  
+
   direct = merge(incoming, outgoing, by = "row.names", all = T)
   direct = merge(undirected, direct, by.x = "row.names", by.y = "Row.names", all = T)
+  colnames(direct) = make.names(colnames(direct))
+  
   
   # Indirect relationships
   ## Directed predicates only
@@ -80,19 +79,21 @@ if(config$generatePredicateFeatures){
   indirect = rbind(indirect_dd, indirect_du, indirect_ud)
   indirect = unique(indirect[indirect$Subject != indirect$Object, ])
   
-  indirect$outgoing = paste0(indirect$Pred1, indirect$diff_expression_Intermediate, indirect$Pred2, indirect$diff_expression_Object)
-  indirect$incoming = paste0(indirect$diff_expression_Subject, indirect$Pred1, indirect$diff_expression_Intermediate, indirect$Pred2)
+  indirect$outgoing = paste0(indirect$Pred1, "_", indirect$diff_expression_Intermediate, "_", indirect$Pred2, "_", indirect$diff_expression_Object)
+  indirect$incoming = paste0(indirect$diff_expression_Subject, "_", indirect$Pred1, "_", indirect$diff_expression_Intermediate, "_", indirect$Pred2)
   
   indirect_outgoing= as.data.frame.matrix(table(indirect$Subject, indirect$outgoing))
   indirect_incoming = as.data.frame.matrix(table(indirect$Object, indirect$incoming))
-  
+
   indirect = merge(indirect_incoming, indirect_outgoing, by = "row.names", all = T)
+  colnames(indirect) = make.names(colnames(indirect))
+  
   pred_features = merge(direct, indirect, by = "Row.names", all = T)
   colnames(pred_features)[1] = "EKP_ID"
   
   pred_features[is.na(pred_features)] = 0
   
-  fwrite(pred_features, paste0("Raw data files/Predicate features generated on ", Sys.Date(), ".csv"))
+  fwrite(pred_features, paste0("Raw data files/Predicate features generated on ", todays_date, ".csv"))
 } else {
   pred_features = as.data.frame(fread(paste0("Raw data files/Predicate features generated on ", config$Data.date, ".csv")))
 }

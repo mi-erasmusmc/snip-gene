@@ -1,9 +1,14 @@
 # Overview script
-#TODO: "Unchanged" expressie status toevoegen
+require(doMC)
 require("yaml")
 config = read_yaml("Execution_config.yml")
+registerDoMC(cores = config$coreCount)
+
+# Set the date which should be assigned to all output files
+todays_date = format(Sys.Date(), "%d-%m-%Y")
 
 # Obtain the relevant genes from the Next Generation Sequencing data
+# TODO: "Unchanged" expressie status toevoegen
 source("getNGSdata.R")
 
 # Get the gene-gene relationships and their annotations
@@ -16,7 +21,7 @@ source("createPredicateFeatures.R")
 source("createNetworkStatisticalFeatures.R") # Duurt lang, kijken of ik daar wat aan kan doen
 
 # Create the reference set from the supplemental materials of Farashi et al.
-source("getDBSNPdata.R") #TODO: Niet elke SNP heeft een locatie
+source("getDbSNPdata.R")
 
 # Combine the SNP data with the NGS data to identify the negative cases
 source("CombineSNPwithDiffGenes.R")

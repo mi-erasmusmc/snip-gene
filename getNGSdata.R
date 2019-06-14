@@ -44,7 +44,7 @@ if(config$calculateAnew){
   }
   
   diff_genes = diff_genes[!is.na(diff_genes$EKP_ID), ]
-  write.csv2(diff_genes, paste0("Raw data files/Expressed genes and their differentiality ", Sys.Date(), ".csv"), row.names = F)
+  write.csv2(diff_genes, paste0("Raw data files/Expressed genes and their differentiality ", todays_date, ".csv"), row.names = F)
 } else {
   diff_genes = read.csv2(paste0("Raw data files/Expressed genes and their differentiality ", config$Data.date, ".csv"), stringsAsFactors = F)
 }
