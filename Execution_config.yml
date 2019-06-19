@@ -5,9 +5,9 @@ getFromKG : TRUE
 saveTriples : TRUE
 generatePredicateFeatures : TRUE
 recalculateNetwork : TRUE
-long : TRUE
+long : FALSE
 getSNPDataFromWeb : TRUE
-deta_bp : 2000000
+delta_bp : 2000000
 diffGenesOnly : TRUE
 onlySelectNegatives : TRUE
 Data.date : "2019-06-14"
