@@ -1,0 +1,69 @@
+---
+title: "Evaluate the ranking performance"
+output: html_notebook
+author: "Wytze Vlietstra"
+date: '`r format(Sys.Date(), "%d-%m-%Y")`'
+---
+
+#TODO: Aggregeren op SNPs, aangezien die soms meerdere genes targeten. Daar apart de MAP voor berekenen.
+
+# Introduction
+
+Here, we evaluate how our gene candidate prioritization method performs. 
+We compare its performance to two baselines: 1) when a random gene is chosen, and 2) when the closest gene is chosen.
+Because a single SNP can target multiple genes, we use the mean average precision as an evaluation metric to compare the rankings.
+
+# Transform the predictions to the proper format
+
+```{r}
+load("Model")
+candidates = read.csv2("Raw data files/", stringsAsFactors = F)
+features = read.csv("Raw data files/", stringsAsFactors = F)
+
+scores = aggregate(list(score = model$pred$Target), by = list(rowIndex = model$pred$rowIndex), mean)
+scores = scores[order(scores$rowIndex), ]
+scores$Name = features$Name
+
+snps = unique(candidates$SNP.ID)
+reference = list()
+for(i in seq_along(snps)){
+  reference[snps[i]] = candidates$Name[candidates$SNP.ID == snps[i]]
+}
+
+predictions = list()
+for(i in 1:nrow(candidates)){
+  ranked_genes = scores[scores$Name %in% candidates$Candidates, ]
+  ranked_genes = ranked_genes[order(-ranked_genes$scores),]
+  predictions[candidates$SNP.ID] = ranked_genes$Name
+}
+```
+
+# Set baselines
+
+First, we calculate the baseline performances against which we compare our performance.
+
+## Random
+
+```{r random}
+average_random_probabilities = lapply(predictions, function(x){length(x)/sum(x)})
+MAP_random = mean(unlist(average_random_probabilities))
+```
+
+If we would randomly order the genes, we would achieve a mean average precision of `r round(MAP_random, 3)`. 
+
+## Closest
+
+```{r closest}
+
+
+```
+
+# Evaluate our predictions
+
+# Conclusion
+
+# Used packages and R-version
+
+```{r, echo = F}
+sessionInfo()
+```

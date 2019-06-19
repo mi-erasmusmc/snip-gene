@@ -4,6 +4,7 @@
 
 # Load the required packages
 require(xlsx)
+require(DescTools)
 
 # Read in the data from Farashi
 farashi_xls = read.xlsx("Reference sets/41568_2018_87_MOESM1_ESM-3.xls", sheetName = "Supplementary TABLE 1", startRow = 2, endRow = 1288, stringsAsFactors = F)
@@ -87,3 +88,16 @@ farashi_final = farashi_final[!farashi_final$SNP.s.Genomic.Location %in% c("Codi
                                                                            "exonic"), ]
 
 farashi_final = merge(farashi_final, out, by.x = "SNP.ID", by.y = "Query")
+
+# Combine SNP data with differentially expressed genes
+for(i in 1:nrow(farashi_final)){
+  chromosome_candidates = ngs[ngs$Chromosome.scaffold.name == farashi_final$Chromosome[i], ]
+  chromosome_candidates$Overlap = Overlap(as.matrix(chromosome_candidates[,c("Gene.start..bp.", "Gene.end..bp.")]),
+                                          c(farashi_final$BP[i] - config$delta_bp, farashi_final$BP[i] + config$delta_bp))
+  farashi_final[i, "Candidate_genes"] = toJSON(unique(chromosome_candidates$Name[chromosome_candidates$Overlap > 0]))
+  farashi_final[i, "nCandidates"] = length(unique(chromosome_candidates$Ensembl_ID[chromosome_candidates$Overlap > 0]))
+  farashi_final[i, "TargetGeneInCandidates"] = ifelse(farashi_final$Target_Gene[i] %in% chromosome_candidates$Name[chromosome_candidates$Overlap > 0], T, F)
+  farashi_final[i, "TargetGeneOnChromosome"] = ifelse(farashi_final$Target_Gene[i] %in% chromosome_candidates$Name, T, F)
+}
+
+write.csv2(farashi_final, paste0("Raw data files/Genes and gene candidates identified on ", todays_date, ".csv"), row.names = F)

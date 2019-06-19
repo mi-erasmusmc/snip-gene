@@ -36,7 +36,7 @@ outcome = factor(f$Class, levels = c("Target", "NonTarget"))
 
 # Split up the dataset into features and non-features
 meta_data = f[,which(colnames(f) %in% removalColumns)]
-f = f[,-which(colnames(f) %in% removalColumns)]
+f = f[,which(!colnames(f) %in% removalColumns)]
 ```
 
 Remove all infrequently occurring features

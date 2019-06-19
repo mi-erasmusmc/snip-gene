@@ -13,17 +13,17 @@ if(config$getFromKG){
   concepts = mongo(url = "mongodb://lagavulin:30017", db = "braindata", collection = "concepts")
   #EKP_genes = concepts$find(query = '{"st":"T028", "taxonomies":"homo sapiens"}')
   
-  rels = triples$find(query = paste0('{"s": {"$in" : ', toJSON(diff_genes$EKP_ID), '}, "o": {"$in" : ', toJSON(diff_genes$EKP_ID), '}}'))
-  rels = merge(rels, diff_genes[,c("EKP_ID", "diff_expression")], by.x = "o", by.y = "EKP_ID")
-  rels = merge(rels, diff_genes[,c("EKP_ID", "diff_expression")], by.x = "s", by.y = "EKP_ID", suffixes = c("_Object", "_Subject"))
-  rels$incoming = paste0(rels$diff_expression_Subject, "_", rels$pn)
-  rels$outgoing = paste0(rels$pn, "_", rels$diff_expression_Object)
+  rels = triples$find(query = paste0('{"s": {"$in" : ', toJSON(ngs$EKP_ID), '}, "o": {"$in" : ', toJSON(ngs$EKP_ID), '}}'))
+  rels = merge(rels, ngs[,c("EKP_ID", "expression")], by.x = "o", by.y = "EKP_ID")
+  rels = merge(rels, ngs[,c("EKP_ID", "expression")], by.x = "s", by.y = "EKP_ID", suffixes = c("_Object", "_Subject"))
+  rels$incoming = paste0(rels$expression_Subject, "_", rels$pn)
+  rels$outgoing = paste0(rels$pn, "_", rels$expression_Object)
   
   rels = rels[rels$s != rels$o, ] # Remove selfref relationships
   EKP_names = unique(data.frame(EKP_ID = c(rels$s, rels$o), EKP_name = c(rels$sn, rels$on)))
   
-  processes = triples$find(query = paste0('{"s": {"$in" : ', toJSON(diff_genes$EKP_ID), '}, "sco": "Physiology"}'))
-  processes2 = triples$find(query = paste0('{"o": {"$in" : ', toJSON(diff_genes$EKP_ID), '}, "scs": "Physiology"}'))
+  processes = triples$find(query = paste0('{"s": {"$in" : ', toJSON(ngs$EKP_ID), '}, "sco": "Physiology"}'))
+  processes2 = triples$find(query = paste0('{"o": {"$in" : ', toJSON(ngs$EKP_ID), '}, "scs": "Physiology"}'))
   
   molecular_functions = concepts$find(query = '{"st": "T044"}', fields = '{"_id" : 1, "n" : 1}')
   #physiological_functions = concepts$find(query = '{"st": "T039"}') # Niet helemaal zeker hierover
@@ -55,14 +55,14 @@ if(config$getFromKG){
   # Shut down the connection
   triples$disconnect()
   concepts$disconnect()
-  if(config$saveTriples){
-    rels$a = NULL #Eruit gehaald vanwege de write, maar misschien in de toekomst erin laten?
-    rels$m = NULL #Eruit gehaald vanwege de write, maar misschien in de toekomst erin laten?
+  
+  rels$a = NULL #Eruit gehaald vanwege de write, maar misschien in de toekomst erin laten?
+  rels$m = NULL #Eruit gehaald vanwege de write, maar misschien in de toekomst erin laten?
     
-    fwrite(rels, file = paste0("Raw data files/Triples extracted from the knowledge graph on ", todays_date, ".csv"), sep = ";")
-    fwrite(as.data.frame(as.matrix(process_matrix)), paste0("Raw data files/Process matrix extracted from the knowledge graph on ", todays_date, ".csv"), sep = ";")
-  }
+  fwrite(rels, file = paste0("Raw data files/Triples extracted from the knowledge graph on ", todays_date, ".csv"), sep = ";")
+  fwrite(as.data.frame(as.matrix(process_matrix)), paste0("Raw data files/Process matrix extracted from the knowledge graph on ", todays_date, ".csv"), sep = ";")
+
 } else {
   rels = as.data.frame(fread(paste0("Raw data files/Triples extracted from the knowledge graph on ", config$Data.date, ".csv")))
-  process_matrix = as.data.frame(fread(paste0("Raw data files/Process matrix extracted from the knowledge graph on", config$Data.date, ".csv")))
+  process_matrix = as.data.frame(fread(paste0("Raw data files/Process matrix extracted from the knowledge graph on ", config$Data.date, ".csv")))
 }

@@ -8,7 +8,6 @@ registerDoMC(cores = config$coreCount)
 todays_date = format(Sys.Date(), "%d-%m-%Y")
 
 # Obtain the relevant genes from the Next Generation Sequencing data
-# TODO: "Unchanged" expressie status toevoegen
 source("getNGSdata.R")
 
 # Get the gene-gene relationships and their annotations
@@ -21,11 +20,9 @@ source("createPredicateFeatures.R")
 source("createNetworkStatisticalFeatures.R") # Duurt lang, kijken of ik daar wat aan kan doen
 
 # Create the reference set from the supplemental materials of Farashi et al.
+# Identify other genes in the neighborhood
 source("getDbSNPdata.R")
-
-# Combine the SNP data with the NGS data to identify the negative cases
-source("CombineSNPwithDiffGenes.R")
-combined = combined[combined$TargetGeneOnChromosome == T, ]
+farashi_final = farashi_final[farashi_final$TargetGeneOnChromosome == T, ]
 
 # Create the final feature set
 source("createFeatureSet.R")
