@@ -29,10 +29,13 @@ registerDoMC(cores = config$coreCount)
 
 ```{r dataload}
 removalColumns = c("EKP_ID", "EKP_Name", "Name", "Gene.start..bp.", "Gene.end..bp.",
-                   "Chromosome.scaffold.name", "FC", "FDR", "diff_expression", "Class")
+                   "Chromosome.scaffold.name", "FC", "FDR", "diff_expression")
 
-f = as.data.frame(fread("Raw data files/Complete feature set generated on 2019-06-12.csv"))
+f = as.data.frame(fread("Raw data files/Complete feature set generated on 17-06-2019.csv"))
+f = f[order(f$Class),]
 outcome = factor(f$Class, levels = c("Target", "NonTarget"))
+
+class_balance = table(outcome)
 
 # Split up the dataset into features and non-features
 meta_data = f[,which(colnames(f) %in% removalColumns)]
@@ -57,12 +60,14 @@ Only in specific experiments will the settings deviate.
 ```{r ML settings}
 train_parameters = trainControl(method = "repeatedcv", number = 10, repeats = 10,
                                 classProbs = TRUE, savePredictions = TRUE, 
-                                summaryFunction = twoClassSummary, sampling = "down")
+                                summaryFunction = twoClassSummary)
 ```
 
 ## Cross-validation performance
 ```{r rf, message = F, warning = F, results = "hide"}
-model = train(y = outcome, x = f, method = "ranger", metric = "ROC", 
+class_weights = c(rep(1, times = max(class_balance)), rep(max(class_balance)/min(class_balance), times = min(class_balance)))
+
+model = train(Class ~ ., data = f, method = "ranger", metric = "ROC", 
               tuneGrid = data.frame(mtry = round(sqrt(ncol(f))), splitrule = "gini", min.node.size = 1),
               save.memory = T,
               trControl = train_parameters, importance = "impurity", num.trees = 1000)
