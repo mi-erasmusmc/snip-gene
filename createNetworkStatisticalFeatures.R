@@ -41,7 +41,7 @@ if(config$recalculateNetwork){
   
   network_features = merge(network_features, ppi_clusters, by = "Gene", all = T)
   
-  if(config$long){
+  if(config$betweenness_cluster){
     betweenness_clusters = cluster_edge_betweenness(ppi_undirected) # Duurt ook lang, maar is wel relevant (zie publicatie)
     ppi_clusters2 = data.frame(Gene = as.vector(V(g)), Betweenness_cluster = betweenness_clusters$membership)
     ppi_clusters2$Betweenness_cluster = paste0("Cluster_", ppi_clusters2$Betweenness_cluster)

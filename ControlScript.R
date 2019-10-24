@@ -7,6 +7,9 @@ registerDoMC(cores = config$coreCount)
 # Set the date which should be assigned to all output files
 todays_date = format(Sys.Date(), "%d-%m-%Y")
 
+# Identify which genes are expressed either in normal or in cancer prostate tissue
+source("IdentifyExpressedGenes.R")
+
 # Obtain the relevant genes from the Next Generation Sequencing data
 source("getNGSdata.R")
 

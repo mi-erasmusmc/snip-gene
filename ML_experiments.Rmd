@@ -29,7 +29,7 @@ registerDoMC(cores = config$coreCount)
 
 ```{r dataload}
 removalColumns = c("EKP_ID", "EKP_Name", "Name", "Gene.start..bp.", "Gene.end..bp.",
-                   "Chromosome.scaffold.name", "FC", "FDR", "diff_expression", "Class")
+                   "Chromosome.scaffold.name", "FC", "FDR", "expression", "Class")
 
 f = as.data.frame(fread("Raw data files/Complete feature set generated on 2019-06-12.csv"))
 outcome = factor(f$Class, levels = c("Target", "NonTarget"))

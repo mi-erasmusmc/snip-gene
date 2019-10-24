@@ -23,12 +23,13 @@ if(config$getSNPDataFromWeb){
   out = data.frame(Query = snps, Chromosome = NA, Marker = NA, Class = NA, Gene = NA, 
                    Alleles = NA, Major = NA, Minor = NA, MAF = NA, BP = NA, AncestralAllele = NA, 
                    stringsAsFactors = F)
-  for(i in 1:nrow(out)){
+  for(i in which(is.na(out$Marker))){
+    print(i)
     snp_position = ncbi_snp_query(out$Query[i])
     if(nrow(snp_position) > 0){
       out[i,] = snp_position
     }
-    Sys.sleep(1)
+    Sys.sleep(2)
   }
   
   write.csv2(out, paste0("Raw data files/SNP info Farashi et al. Supplemental Materials 1 retrieved on ", todays_date, ".csv"), row.names = F)

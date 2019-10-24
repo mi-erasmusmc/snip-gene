@@ -10,6 +10,10 @@ if(config$calculateAnew){
   ngs$Ensembl_ID_no_Dot = sapply(ngs$Ensembl_ID, function(x){return(unlist(strsplit(x, "\\."))[1])})
   ngs$FC = 2^ngs$log2FC
   
+  if(config$ExpressedGenesOnly){
+    ngs = ngs[ngs$Ensembl_ID %in% expressed_genes, ]
+  }
+  
   # Get the locations of the genes
   gene_data = read.csv("GeneExpressionData/ENSEMBL gene locations downloaded from BioMart on 13-05-2019.txt", stringsAsFactors = F)
   chromosomes = c(1:22, "X", "Y")
