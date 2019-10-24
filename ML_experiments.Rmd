@@ -29,7 +29,11 @@ registerDoMC(cores = config$coreCount)
 
 ```{r dataload}
 removalColumns = c("EKP_ID", "EKP_Name", "Name", "Gene.start..bp.", "Gene.end..bp.",
+<<<<<<< HEAD
                    "Chromosome.scaffold.name", "FC", "FDR", "expression")
+=======
+                   "Chromosome.scaffold.name", "FC", "FDR", "expression", "Class")
+>>>>>>> 25ec6ed03bd3ea9cf9a373834dab07d6125ea2ec
 
 f = as.data.frame(fread("Raw data files/Complete feature set generated on 28-06-2019.csv"))
 f = f[order(f$Class),]

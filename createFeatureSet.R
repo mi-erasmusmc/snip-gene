@@ -10,7 +10,6 @@ features = ngs[ngs$EKP_ID %in% c(rels$s, rels$o), c("Name", "Gene.start..bp.", "
                                                     "Chromosome.scaffold.name", "FC", "FDR", "expression", "EKP_ID")]
 
 features = merge(features, unique(data.frame(EKP_ID = c(rels$s, rels$o), EKP_Name = c(rels$sn, rels$on))), by = "EKP_ID", all.x = T)
-features = merge(features, ngs, by.x = "EKP_Name", by.y = "Gene", all.x = T)
 features = merge(features, pred_features, by = "EKP_ID", all.x = T)
 features = merge(features, process_matrix, by.x = "EKP_ID", by.y = "row.names", all.x = T)
 

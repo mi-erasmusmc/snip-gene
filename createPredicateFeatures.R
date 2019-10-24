@@ -39,6 +39,11 @@ if(config$generatePredicateFeatures){
   direct = merge(undirected, direct, by.x = "row.names", by.y = "Row.names", all = T)
   colnames(direct) = make.names(colnames(direct))
   
+  # Clean up
+  incoming = NULL
+  outgoing = NULL
+  undirected = NULL
+  undirected_with_expression = NULL
   
   # Indirect relationships
   ## Directed predicates only
@@ -82,6 +87,12 @@ if(config$generatePredicateFeatures){
   indirect$outgoing = paste0(indirect$Pred1, "_", indirect$expression_Intermediate, "_", indirect$Pred2, "_", indirect$expression_Object)
   indirect$incoming = paste0(indirect$expression_Subject, "_", indirect$Pred1, "_", indirect$expression_Intermediate, "_", indirect$Pred2)
   
+  # Clean up
+  indirect_dd = NULL
+  indirect_du = NULL
+  indirect_ud = NULL
+  
+  # Finalize
   indirect_outgoing= as.data.frame.matrix(table(indirect$Subject, indirect$outgoing))
   indirect_incoming = as.data.frame.matrix(table(indirect$Object, indirect$incoming))
 

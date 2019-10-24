@@ -1,5 +1,6 @@
-coreCount : 3
-calculateAnew : FALSE
+coreCount : 20
+calculateAnew : TRUE
+ExpressedGenesOnly : TRUE
 fold_change_cutoff : 0.1
 FDR_cutoff : 0.01
 proteinOnly : TRUE
@@ -7,8 +8,9 @@ getFromKG : FALSE
 generatePredicateFeatures : FALSE
 recalculateNetwork : FALSE
 long : FALSE
+betweenness_cluster : FALSE
 getSNPDataFromWeb : FALSE
 delta_bp : 2000000
 diffGenesOnly : FALSE
 onlySelectNegatives : TRUE
-Data.date : "18-06-2019"
+Data.date : "19-06-2019"

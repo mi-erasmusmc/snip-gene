@@ -25,4 +25,8 @@ cancer_binary[cancer_binary >= nReads_cutoff] = T
 cancer_binary$total = rowSums(cancer_binary)
 cancer_binary = cancer_binary[cancer_binary$total > (ncol(cancer_binary) - 1) * Expression_percentage,]
 
+<<<<<<< HEAD
 expressed_genes = union(row.names(cancer_binary), row.names(normal_binary))
+=======
+expressed_genes = union(row.names(cancer_binary), row.names(normal_binary))
+>>>>>>> 25ec6ed03bd3ea9cf9a373834dab07d6125ea2ec
