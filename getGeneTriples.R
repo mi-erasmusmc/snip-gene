@@ -7,8 +7,9 @@ require(data.table)
 require(rjson)
 
 if(config$getFromKG){
-  # Extract the triples from the knowledge graph
+  ## Extract the triples from the knowledge graph
   ## Set up the database connection
+  print("Extracting gene-gene triples from the knowledge graph")
   triples = mongo(url = "mongodb://lagavulin:30017", db = "braindata", collection = "triples") 
   concepts = mongo(url = "mongodb://lagavulin:30017", db = "braindata", collection = "concepts")
   #EKP_genes = concepts$find(query = '{"st":"T028", "taxonomies":"homo sapiens"}')
@@ -63,6 +64,7 @@ if(config$getFromKG){
   fwrite(as.data.frame(as.matrix(process_matrix)), paste0("Raw data files/Process matrix extracted from the knowledge graph on ", todays_date, ".csv"), sep = ";")
 
 } else {
+  print("Reading gene-gene triples from previously created file")
   rels = as.data.frame(fread(paste0("Raw data files/Triples extracted from the knowledge graph on ", config$Data.date, ".csv")))
   process_matrix = as.data.frame(fread(paste0("Raw data files/Process matrix extracted from the knowledge graph on ", config$Data.date, ".csv")))
 }

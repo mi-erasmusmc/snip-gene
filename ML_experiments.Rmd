@@ -55,14 +55,14 @@ Set the general parameters for the machine learning algorithms that will be used
 Only in specific experiments will the settings deviate.
 
 ```{r ML settings}
-train_parameters = trainControl(method = "repeatedcv", number = 10, repeats = 10,
+train_parameters = trainControl(method = "cv", number = 10, repeats = 10,
                                 classProbs = TRUE, savePredictions = TRUE, 
                                 summaryFunction = twoClassSummary, sampling = "down")
 ```
 
 ## Cross-validation performance
 ```{r rf, message = F, warning = F, results = "hide"}
-model = train(y = outcome, x = f, method = "ranger", metric = "ROC", 
+rf_model = train(y = outcome, x = f, method = "ranger", metric = "ROC", 
               tuneGrid = data.frame(mtry = round(sqrt(ncol(f))), splitrule = "gini", min.node.size = 1),
               save.memory = T,
               trControl = train_parameters, importance = "impurity", num.trees = 1000)

@@ -2,6 +2,7 @@
 require(data.table)
 
 if(config$generatePredicateFeatures){
+  print("Creating the predicate feature set")
   # Specify the undirected predicates
   undirected_predicates = c("interacts with", 
                             "forms protein complex with", 
@@ -17,6 +18,7 @@ if(config$generatePredicateFeatures){
                             "ortholog is associated with")
   
   # Direct relationships
+  print("Creating features for direct relationships")
   outgoing = as.data.frame.matrix(table(rels$s[!rels$pn %in% undirected_predicates], rels$outgoing[!rels$pn %in% undirected_predicates]))
   incoming = as.data.frame.matrix(table(rels$o[!rels$pn %in% undirected_predicates], rels$incoming[!rels$pn %in% undirected_predicates]))
 
@@ -47,6 +49,7 @@ if(config$generatePredicateFeatures){
   
   # Indirect relationships
   ## Directed predicates only
+  print("Creating features for indirect relationships")
   indirect_dd = merge(as.data.table(rels[-which(rels$pn %in% undirected_predicates), c("s", "pn", "o", "expression_Subject", "expression_Object")]), 
                    as.data.table(rels[-which(rels$pn %in% undirected_predicates), c("s", "pn", "o", "expression_Object")]), 
                    by.x = "o", by.y = "s", allow.cartesian = T)
@@ -67,7 +70,7 @@ if(config$generatePredicateFeatures){
   indirect_du = unique(rbind(indirect_du1, indirect_du2))
   
   
-  # Andere richting op ook
+  # Also other way around
   indirect_ud1 = merge(as.data.table(rels[rels$pn %in% undirected_predicates, c("s", "pn", "o", "expression_Subject", "expression_Object")]),
                        as.data.table(rels[-which(rels$pn %in% undirected_predicates), c("s", "pn", "o", "expression_Object")]), 
                        by.x = "o", by.y = "s", allow.cartesian = T)
@@ -106,5 +109,6 @@ if(config$generatePredicateFeatures){
   
   fwrite(pred_features, paste0("Raw data files/Predicate features generated on ", todays_date, ".csv"))
 } else {
+  print("Reading in the previously created predicate features")
   pred_features = as.data.frame(fread(paste0("Raw data files/Predicate features generated on ", config$Data.date, ".csv")))
 }

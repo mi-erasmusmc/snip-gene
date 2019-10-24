@@ -2,6 +2,8 @@
 require(httr)
 require(rjson)
 
+print("Loading Next-generation-sequencing data")
+
 if(config$calculateAnew){
   # Select the relevant genes
   ngs = read.csv("GeneExpressionData/Galaxy37-[edgeR_DGE_on_2__design_matrix_prostate_unpaired.txt_-_differentially_expressed_genes].tabular.annotated.txt", 
@@ -13,6 +15,8 @@ if(config$calculateAnew){
   if(config$ExpressedGenesOnly){
     ngs = ngs[ngs$Ensembl_ID %in% expressed_genes, ]
   }
+  
+  print("Loading and integrating ENSEMBL data")
   
   # Get the locations of the genes
   gene_data = read.csv("GeneExpressionData/ENSEMBL gene locations downloaded from BioMart on 13-05-2019.txt", stringsAsFactors = F)

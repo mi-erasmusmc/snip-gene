@@ -1,4 +1,5 @@
 # Calculate which proteins are expressed within the normal and the prostate cancer data
+print("Identifying expressed genes")
 
 Expression_percentage = 0.5
 nReads_cutoff = 2

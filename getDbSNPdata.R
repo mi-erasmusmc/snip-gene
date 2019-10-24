@@ -13,6 +13,7 @@ farashi = farashi[!is.na(farashi$SNP.s.Genomic.Location) & !is.na(farashi$Target
 
 if(config$getSNPDataFromWeb){
   require(rsnps)
+  print("Obtaining SNP data from the web (may take long)")
   
   # Remove entries withouth rs identifier
   farashi = farashi[-grep("chr", farashi$SNP.ID), ]
@@ -34,6 +35,7 @@ if(config$getSNPDataFromWeb){
   
   write.csv2(out, paste0("Raw data files/SNP info Farashi et al. Supplemental Materials 1 retrieved on ", todays_date, ".csv"), row.names = F)
 } else {
+  print("Reading in previously obtained SNP data")
   out = read.csv2(paste0("Raw data files//SNP info Farashi et al. Supplemental Materials 1 retrieved on ", config$Data.date, ".csv"), stringsAsFactors = F)
 }
 
@@ -91,6 +93,7 @@ farashi_final = farashi_final[!farashi_final$SNP.s.Genomic.Location %in% c("Codi
 farashi_final = merge(farashi_final, out, by.x = "SNP.ID", by.y = "Query")
 
 # Combine SNP data with differentially expressed genes
+print("Identifying genes that are differentially expressed as candidates for SNP's")
 for(i in 1:nrow(farashi_final)){
   chromosome_candidates = ngs[ngs$Chromosome.scaffold.name == farashi_final$Chromosome[i], ]
   chromosome_candidates$Overlap = Overlap(as.matrix(chromosome_candidates[,c("Gene.start..bp.", "Gene.end..bp.")]),

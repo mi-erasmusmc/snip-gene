@@ -5,8 +5,8 @@ require(igraph)
 require(orca)
 
 if(config$recalculateNetwork){
-
-  # Prepareer data voor count functie orca
+  print("Calculating network statistical features from data")
+  # Prepare data for count function orca
   nodes = data.frame(Gene = unique(c(rels$sn, rels$on)))
   nodes$ID = 1:nrow(nodes)
   
@@ -49,5 +49,6 @@ if(config$recalculateNetwork){
   }
   write.csv2(network_features, paste0("Raw data files/Network metric features calculated on ", todays_date, ".csv"), row.names = F)
 } else {
+  print("Reading in previously calculated network statistical features")
   network_features = read.csv2(paste0("Raw data files/Network metric features calculated on ", config$Data.date, ".csv"), stringsAsFactors = F)
 }
