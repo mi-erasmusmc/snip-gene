@@ -4,8 +4,8 @@ fold_change_cutoff : 0.1
 FDR_cutoff : 0.01
 proteinOnly : TRUE
 getFromKG : FALSE
-generatePredicateFeatures : TRUE
-recalculateNetwork : TRUE
+generatePredicateFeatures : FALSE
+recalculateNetwork : FALSE
 long : FALSE
 getSNPDataFromWeb : FALSE
 delta_bp : 2000000

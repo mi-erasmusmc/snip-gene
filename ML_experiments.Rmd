@@ -29,9 +29,9 @@ registerDoMC(cores = config$coreCount)
 
 ```{r dataload}
 removalColumns = c("EKP_ID", "EKP_Name", "Name", "Gene.start..bp.", "Gene.end..bp.",
-                   "Chromosome.scaffold.name", "FC", "FDR", "diff_expression")
+                   "Chromosome.scaffold.name", "FC", "FDR", "expression")
 
-f = as.data.frame(fread("Raw data files/Complete feature set generated on 17-06-2019.csv"))
+f = as.data.frame(fread("Raw data files/Complete feature set generated on 28-06-2019.csv"))
 f = f[order(f$Class),]
 outcome = factor(f$Class, levels = c("Target", "NonTarget"))
 
@@ -58,7 +58,7 @@ Set the general parameters for the machine learning algorithms that will be used
 Only in specific experiments will the settings deviate.
 
 ```{r ML settings}
-train_parameters = trainControl(method = "repeatedcv", number = 10, repeats = 10,
+train_parameters = trainControl(method = "cv", number = 10, repeats = 10,
                                 classProbs = TRUE, savePredictions = TRUE, 
                                 summaryFunction = twoClassSummary)
 ```

@@ -5,8 +5,6 @@ author: "Wytze Vlietstra"
 date: '`r format(Sys.Date(), "%d-%m-%Y")`'
 ---
 
-#TODO: Aggregeren op SNPs, aangezien die soms meerdere genes targeten. Daar apart de MAP voor berekenen.
-
 # Introduction
 
 Here, we evaluate how our gene candidate prioritization method performs. 
@@ -18,8 +16,8 @@ Because a single SNP can target multiple genes, we use the mean average precisio
 ```{r}
 require(rjson)
 load("Model")
-candidates = read.csv2("Raw data files/Genes and gene candidates identified on 19-06-2019.csv", stringsAsFactors = F)
-features = read.csv("Raw data files/Complete feature set generated on 17-06-2019.csv", stringsAsFactors = F)
+candidates = read.csv2("Raw data files/Genes and gene candidates identified on 28-06-2019.csv", stringsAsFactors = F)
+features = as.data.frame(fread("Raw data files/Complete feature set generated on 28-06-2019.csv"))
 
 scores = aggregate(list(score = model$pred$Target), by = list(rowIndex = model$pred$rowIndex), mean)
 scores = scores[order(scores$rowIndex), -which(colnames(scores) == "rowIndex")]
@@ -62,6 +60,16 @@ If we would randomly order the genes, we would achieve a mean average precision 
 ## Closest
 
 ```{r closest}
+ranks_closest = c()
+for(i in 1:nrow(candidates)){
+  ranks_closest = append(ranks_closest, which(fromJSON(candidates$CandidatesSortedOnDistance[i]) == candidates$Target_Gene[i]))
+}
+```
+
+## DEPICT
+
+```{r depict}
+depict = read.delim("DEPICT results/Prostate_Cancer_geneprioritization.txt", stringsAsFactors = F)
 
 
 ```
