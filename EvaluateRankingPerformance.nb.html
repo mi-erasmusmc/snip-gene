@@ -173,7 +173,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Evaluate the ranking performance</h1>
 <h4 class="author"><em>Wytze Vlietstra</em></h4>
-<h4 class="date"><em>17-06-2019</em></h4>
+<h4 class="date"><em>01-07-2019</em></h4>
 
 </div>
 
@@ -187,22 +187,15 @@ $(document).ready(function () {
 <h1>Transform the predictions to the proper format</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG9hZChcIk1vZGVsXCIpXG5jYW5kaWRhdGVzID0gcmVhZC5jc3YyKFwiUmF3IGRhdGEgZmlsZXMvXCIsIHN0cmluZ3NBc0ZhY3RvcnMgPSBGKVxuZmVhdHVyZXMgPSByZWFkLmNzdihcIlJhdyBkYXRhIGZpbGVzL1wiLCBzdHJpbmdzQXNGYWN0b3JzID0gRilcblxuc2NvcmVzID0gYWdncmVnYXRlKGxpc3Qoc2NvcmUgPSBtb2RlbCRwcmVkJFRhcmdldCksIGJ5ID0gbGlzdChyb3dJbmRleCA9IG1vZGVsJHByZWQkcm93SW5kZXgpLCBtZWFuKVxuc2NvcmVzID0gc2NvcmVzW29yZGVyKHNjb3JlcyRyb3dJbmRleCksIF1cbnNjb3JlcyROYW1lID0gZmVhdHVyZXMkTmFtZVxuXG5wcmVkaWN0aW9ucyA9IGxpc3QoKVxuZm9yKGkgaW4gMTpucm93KGNhbmRpZGF0ZXMpKXtcbiAgcmFua2VkX2dlbmVzID0gc2NvcmVzW3Njb3JlcyROYW1lICVpbiUgY2FuZGlkYXRlcyRDYW5kaWRhdGVzLCBdXG4gIHJhbmtlZF9nZW5lcyA9IHJhbmtlZF9nZW5lc1tvcmRlcigtcmFua2VkX2dlbmVzJHNjb3JlcyksXVxuICBwcmVkaWN0aW9uc1tjYW5kaWRhdGVzJFRhcmdldC5HZW5lXSA9IHJhbmtlZF9nZW5lcyROYW1lXG59XG5gYGAifQ== -->
-<pre class="r"><code>load(&quot;Model&quot;)
-candidates = read.csv2(&quot;Raw data files/&quot;, stringsAsFactors = F)
-features = read.csv(&quot;Raw data files/&quot;, stringsAsFactors = F)
-
-scores = aggregate(list(score = model$pred$Target), by = list(rowIndex = model$pred$rowIndex), mean)
-scores = scores[order(scores$rowIndex), ]
-scores$Name = features$Name
-
-predictions = list()
-for(i in 1:nrow(candidates)){
-  ranked_genes = scores[scores$Name %in% candidates$Candidates, ]
-  ranked_genes = ranked_genes[order(-ranked_genes$scores),]
-  predictions[candidates$Target.Gene] = ranked_genes$Name
-}</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FuZGlkYXRlcyA9IHJlYWQuY3N2MihcIlJhdyBkYXRhIGZpbGVzL0dlbmVzIGFuZCBnZW5lIGNhbmRpZGF0ZXMgaWRlbnRpZmllZCBvbiAyOC0wNi0yMDE5LmNzdlwiLCBzdHJpbmdzQXNGYWN0b3JzID0gRilcbmZlYXR1cmVzID0gYXMuZGF0YS5mcmFtZShmcmVhZChcIlJhdyBkYXRhIGZpbGVzL0NvbXBsZXRlIGZlYXR1cmUgc2V0IGdlbmVyYXRlZCBvbiAyOC0wNi0yMDE5LmNzdlwiKSlcblxuYGBgIn0= -->
+<pre class="r"><code>candidates = read.csv2(&quot;Raw data files/Genes and gene candidates identified on 28-06-2019.csv&quot;, stringsAsFactors = F)
+features = as.data.frame(fread(&quot;Raw data files/Complete feature set generated on 28-06-2019.csv&quot;))
+</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gZnJlYWQoXCJSYXcgZGF0YSBmaWxlcy9Db21wbGV0ZSBmZWF0dXJlIHNldCBnZW5lcmF0ZWQgb24gMjgtMDYtMjAxOS5jc3ZcIikgOiBcbiAgY291bGQgbm90IGZpbmQgZnVuY3Rpb24gXCJmcmVhZFwiXG4ifQ== -->
+<pre><code>Error in fread(&quot;Raw data files/Complete feature set generated on 28-06-2019.csv&quot;) : 
+  could not find function &quot;fread&quot;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -213,23 +206,198 @@ for(i in 1:nrow(candidates)){
 <h2>Random</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXZlcmFnZV9yYW5kb21fcHJvYmFiaWxpdGllcyA9IGxhcHBseShwcmVkaWN0aW9ucywgZnVuY3Rpb24oeCl7bGVuZ3RoKHgpL3N1bSh4KX0pXG5NQVBfcmFuZG9tID0gbWVhbih1bmxpc3QoYXZlcmFnZV9yYW5kb21fcHJvYmFiaWxpdGllcykpXG5gYGAifQ== -->
-<pre class="r"><code>average_random_probabilities = lapply(predictions, function(x){length(x)/sum(x)})
-MAP_random = mean(unlist(average_random_probabilities))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxpbmdfcmVwZWF0cyA9IDEwMFxubWVhbl9zYW1wbGVkX3JhbmtzID0gcmVwKE5BLCB0aW1lcyA9IGxlbmd0aChwcmVkaWN0aW9ucykpXG5mb3IoaSBpbiBzZXFfYWxvbmcocHJlZGljdGlvbnMpKXtcbiAgc2FtcGxlZF9yYW5rcyA9IGMoKVxuICBpZihcIlRhcmdldFwiICVpbiUgcHJlZGljdGlvbnNbW2ldXSRDbGFzcyl7XG4gICAgZm9yKGogaW4gMTpzYW1wbGluZ19yZXBlYXRzKXtcbiAgICAgIHNhbXBsZWRfcmFua3MgPSBhcHBlbmQoc2FtcGxlZF9yYW5rcywgc2FtcGxlKHNlcSgxLCBucm93KHByZWRpY3Rpb25zW1tpXV0pKSwgc2l6ZSA9IGxlbmd0aCh3aGljaChwcmVkaWN0aW9uc1tbaV1dJENsYXNzID09IFwiVGFyZ2V0XCIpKSkpXG4gICAgfVxuICAgIG1lYW5fc2FtcGxlZF9yYW5rc1tpXSA9IG1lYW4oc2FtcGxlZF9yYW5rcylcbiAgfVxufVxubWVhbihuYS5vbWl0KG1lYW5fc2FtcGxlZF9yYW5rcykpXG5gYGAifQ== -->
+<pre class="r"><code>sampling_repeats = 100
+mean_sampled_ranks = rep(NA, times = length(predictions))
+for(i in seq_along(predictions)){
+  sampled_ranks = c()
+  if(&quot;Target&quot; %in% predictions[[i]]$Class){
+    for(j in 1:sampling_repeats){
+      sampled_ranks = append(sampled_ranks, sample(seq(1, nrow(predictions[[i]])), size = length(which(predictions[[i]]$Class == &quot;Target&quot;))))
+    }
+    mean_sampled_ranks[i] = mean(sampled_ranks)
+  }
+}
+mean(na.omit(mean_sampled_ranks))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIyLjg4MTg2XG4ifQ== -->
+<pre><code>[1] 22.88186</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>If we would randomly order the genes, we would achieve a mean average precision of.</p>
 </div>
 <div id="closest" class="section level2">
 <h2>Closest</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmFua3NfY2xvc2VzdCA9IGMoKVxuZm9yKGkgaW4gMTpucm93KGNhbmRpZGF0ZXMpKXtcbiAgcHJpbnQod2hpY2goZnJvbUpTT04oY2FuZGlkYXRlcyRDYW5kaWRhdGVzU29ydGVkT25EaXN0YW5jZVtpXSkgPT0gY2FuZGlkYXRlcyRUYXJnZXRfR2VuZVtpXSkpXG4gIHJhbmtzX2Nsb3Nlc3QgPSBhcHBlbmQocmFua3NfY2xvc2VzdCwgd2hpY2goZnJvbUpTT04oY2FuZGlkYXRlcyRDYW5kaWRhdGVzU29ydGVkT25EaXN0YW5jZVtpXSkgPT0gY2FuZGlkYXRlcyRUYXJnZXRfR2VuZVtpXSkpXG59XG5cbmBgYCJ9 -->
+<pre class="r"><code>ranks_closest = c()
+for(i in 1:nrow(candidates)){
+  print(which(fromJSON(candidates$CandidatesSortedOnDistance[i]) == candidates$Target_Gene[i]))
+  ranks_closest = append(ranks_closest, which(fromJSON(candidates$CandidatesSortedOnDistance[i]) == candidates$Target_Gene[i]))
+}
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDFcblsxXSAxXG5pbnRlZ2VyKDApXG5bMV0gMVxuWzFdIDFcblsxXSAyXG5bMV0gNFxuWzFdIDFcblsxXSAxXG5bMV0gMVxuWzFdIDJcblsxXSAxXG5bMV0gMVxuWzFdIDFcblsxXSAxXG5bMV0gMVxuaW50ZWdlcigwKVxuaW50ZWdlcigwKVxuWzFdIDJcblsxXSAyXG5bMV0gM1xuWzFdIDFcblsxXSAyXG5bMV0gMlxuWzFdIDFcblsxXSAxXG5bMV0gMlxuWzFdIDFcbmludGVnZXIoMClcblsxXSAyXG5bMV0gMlxuWzFdIDJcblsxXSAxXG5bMV0gMVxuWzFdIDJcblsxXSAxXG5bMV0gMVxuWzFdIDFcblsxXSA2XG5bMV0gMlxuWzFdIDFcblsxXSAyXG5bMV0gOFxuWzFdIDFcblsxXSAxXG5pbnRlZ2VyKDApXG5bMV0gM1xuWzFdIDFcblsxXSAzXG5bMV0gMVxuWzFdIDNcblsxXSAxXG5bMV0gM1xuWzFdIDFcblsxXSAxXG5bMV0gMVxuWzFdIDFcblsxXSAxXG5bMV0gMlxuWzFdIDFcblsxXSAxXG5bMV0gM1xuWzFdIDJcblsxXSAxXG5bMV0gMVxuWzFdIDFcblsxXSAxXG5bMV0gMTFcblsxXSAxXG5bMV0gM1xuWzFdIDJcblsxXSAxXG5bMV0gMlxuWzFdIDNcblsxXSAxXG5bMV0gMVxuWzFdIDFcblsxXSAyXG5bMV0gMlxuaW50ZWdlcigwKVxuWzFdIDFcblsxXSAxXG5bMV0gMVxuWzFdIDFcblsxXSAxXG5bMV0gMlxuWzFdIDJcblsxXSAzXG5bMV0gMVxuWzFdIDFcblsxXSAxXG5bMV0gMVxuWzFdIDFcblsxXSAxXG5bMV0gMVxuWzFdIDFcblsxXSAyXG5bMV0gMVxuWzFdIDJcblsxXSAyXG5bMV0gMVxuWzFdIDFcblsxXSAxXG5bMV0gMlxuWzFdIDNcbmludGVnZXIoMClcblsxXSAxXG5bMV0gMlxuWzFdIDhcblsxXSAxXG5bMV0gMlxuWzFdIDNcblsxXSAyXG5bMV0gMVxuWzFdIDJcblsxXSAxXG5bMV0gMVxuWzFdIDFcblsxXSAxXG5bMV0gMVxuWzFdIDFcblsxXSAyXG5bMV0gMVxuIn0= -->
+<pre><code>[1] 1
+[1] 1
+integer(0)
+[1] 1
+[1] 1
+[1] 2
+[1] 4
+[1] 1
+[1] 1
+[1] 1
+[1] 2
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+integer(0)
+integer(0)
+[1] 2
+[1] 2
+[1] 3
+[1] 1
+[1] 2
+[1] 2
+[1] 1
+[1] 1
+[1] 2
+[1] 1
+integer(0)
+[1] 2
+[1] 2
+[1] 2
+[1] 1
+[1] 1
+[1] 2
+[1] 1
+[1] 1
+[1] 1
+[1] 6
+[1] 2
+[1] 1
+[1] 2
+[1] 8
+[1] 1
+[1] 1
+integer(0)
+[1] 3
+[1] 1
+[1] 3
+[1] 1
+[1] 3
+[1] 1
+[1] 3
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 2
+[1] 1
+[1] 1
+[1] 3
+[1] 2
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 11
+[1] 1
+[1] 3
+[1] 2
+[1] 1
+[1] 2
+[1] 3
+[1] 1
+[1] 1
+[1] 1
+[1] 2
+[1] 2
+integer(0)
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 2
+[1] 2
+[1] 3
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 2
+[1] 1
+[1] 2
+[1] 2
+[1] 1
+[1] 1
+[1] 1
+[1] 2
+[1] 3
+integer(0)
+[1] 1
+[1] 2
+[1] 8
+[1] 1
+[1] 2
+[1] 3
+[1] 2
+[1] 1
+[1] 2
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 1
+[1] 2
+[1] 1</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="depict" class="section level2">
+<h2>DEPICT</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVwaWN0ID0gcmVhZC5jc3YyKFwiREVQSUNUIHJlc3VsdHMvUHJvc3RhdGVfQ2FuY2VyX2dlbmVwcmlvcml0aXphdGlvbi50eHRcIiwgc3RyaW5nc0FzRmFjdG9ycyA9IEYpXG5cbmBgYCJ9 -->
+<pre class="r"><code>depict = read.csv2(&quot;DEPICT results/Prostate_Cancer_geneprioritization.txt&quot;, stringsAsFactors = F)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gcmVhZC50YWJsZShmaWxlID0gZmlsZSwgaGVhZGVyID0gaGVhZGVyLCBzZXAgPSBzZXAsIHF1b3RlID0gcXVvdGUsICA6IFxuICBtb3JlIGNvbHVtbnMgdGhhbiBjb2x1bW4gbmFtZXNcbiJ9 -->
+<pre><code>Error in read.table(file = file, header = header, sep = sep, quote = quote,  : 
+  more columns than column names</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 </div>
 <div id="evaluate-our-predictions" class="section level1">
 <h1>Evaluate our predictions</h1>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmFua3MgPSBjKClcbmZvcihpIGluIHNlcV9hbG9uZyhwcmVkaWN0aW9ucykpe1xuICBpZihcIlRhcmdldFwiICVpbiUgcHJlZGljdGlvbnNbW2ldXSRDbGFzcyl7XG4gICAgcmFua3MgPSBhcHBlbmQocmFua3MsIHdoaWNoKHByZWRpY3Rpb25zW1tpXV0kQ2xhc3MgPT0gXCJUYXJnZXRcIikpXG4gIH1cbn1cblxuYGBgIn0= -->
+<pre class="r"><code>ranks = c()
+for(i in seq_along(predictions)){
+  if(&quot;Target&quot; %in% predictions[[i]]$Class){
+    ranks = append(ranks, which(predictions[[i]]$Class == &quot;Target&quot;))
+  }
+}
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
@@ -241,7 +409,7 @@ MAP_random = mean(unlist(average_random_probabilities))</code></pre>
 <!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXZhbHVhdGUgdGhlIHJhbmtpbmcgcGVyZm9ybWFuY2UiCm91dHB1dDogaHRtbF9ub3RlYm9vawphdXRob3I6ICJXeXR6ZSBWbGlldHN0cmEiCmRhdGU6ICdgciBmb3JtYXQoU3lzLkRhdGUoKSwgIiVkLSVtLSVZIilgJwotLS0KCiMgSW50cm9kdWN0aW9uCgpIZXJlLCB3ZSBldmFsdWF0ZSBob3cgb3VyIGdlbmUgY2FuZGlkYXRlIHByaW9yaXRpemF0aW9uIG1ldGhvZCBwZXJmb3Jtcy4gCldlIGNvbXBhcmUgaXRzIHBlcmZvcm1hbmNlIHRvIHR3byBiYXNlbGluZXM6IDEpIHdoZW4gYSByYW5kb20gZ2VuZSBpcyBjaG9zZW4sIGFuZCAyKSB3aGVuIHRoZSBjbG9zZXN0IGdlbmUgaXMgY2hvc2VuLgpCZWNhdXNlIGEgc2luZ2xlIFNOUCBjYW4gdGFyZ2V0IG11bHRpcGxlIGdlbmVzLCB3ZSB1c2UgdGhlIG1lYW4gYXZlcmFnZSBwcmVjaXNpb24gYXMgYW4gZXZhbHVhdGlvbiBtZXRyaWMgdG8gY29tcGFyZSB0aGUgcmFua2luZ3MuCgojIFRyYW5zZm9ybSB0aGUgcHJlZGljdGlvbnMgdG8gdGhlIHByb3BlciBmb3JtYXQKCmBgYHtyfQpsb2FkKCJNb2RlbCIpCmNhbmRpZGF0ZXMgPSByZWFkLmNzdjIoIlJhdyBkYXRhIGZpbGVzLyIsIHN0cmluZ3NBc0ZhY3RvcnMgPSBGKQpmZWF0dXJlcyA9IHJlYWQuY3N2KCJSYXcgZGF0YSBmaWxlcy8iLCBzdHJpbmdzQXNGYWN0b3JzID0gRikKCnNjb3JlcyA9IGFnZ3JlZ2F0ZShsaXN0KHNjb3JlID0gbW9kZWwkcHJlZCRUYXJnZXQpLCBieSA9IGxpc3Qocm93SW5kZXggPSBtb2RlbCRwcmVkJHJvd0luZGV4KSwgbWVhbikKc2NvcmVzID0gc2NvcmVzW29yZGVyKHNjb3JlcyRyb3dJbmRleCksIF0Kc2NvcmVzJE5hbWUgPSBmZWF0dXJlcyROYW1lCgpwcmVkaWN0aW9ucyA9IGxpc3QoKQpmb3IoaSBpbiAxOm5yb3coY2FuZGlkYXRlcykpewogIHJhbmtlZF9nZW5lcyA9IHNjb3Jlc1tzY29yZXMkTmFtZSAlaW4lIGNhbmRpZGF0ZXMkQ2FuZGlkYXRlcywgXQogIHJhbmtlZF9nZW5lcyA9IHJhbmtlZF9nZW5lc1tvcmRlcigtcmFua2VkX2dlbmVzJHNjb3JlcyksXQogIHByZWRpY3Rpb25zW2NhbmRpZGF0ZXMkVGFyZ2V0LkdlbmVdID0gcmFua2VkX2dlbmVzJE5hbWUKfQpgYGAKCiMgU2V0IGJhc2VsaW5lcwoKRmlyc3QsIHdlIGNhbGN1bGF0ZSB0aGUgYmFzZWxpbmUgcGVyZm9ybWFuY2VzIGFnYWluc3Qgd2hpY2ggd2UgY29tcGFyZSBvdXIgcGVyZm9ybWFuY2UuCgojIyBSYW5kb20KCmBgYHtyIHJhbmRvbX0KYXZlcmFnZV9yYW5kb21fcHJvYmFiaWxpdGllcyA9IGxhcHBseShwcmVkaWN0aW9ucywgZnVuY3Rpb24oeCl7bGVuZ3RoKHgpL3N1bSh4KX0pCk1BUF9yYW5kb20gPSBtZWFuKHVubGlzdChhdmVyYWdlX3JhbmRvbV9wcm9iYWJpbGl0aWVzKSkKYGBgCgoKCiMjIENsb3Nlc3QKCmBgYHtyIGNsb3Nlc3R9CgoKYGBgCgojIEV2YWx1YXRlIG91ciBwcmVkaWN0aW9ucwoKIyBDb25jbHVzaW9uCgojIFVzZWQgcGFja2FnZXMgYW5kIFItdmVyc2lvbgoKYGBge3IsIGVjaG8gPSBGfQpzZXNzaW9uSW5mbygpCmBgYA==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXZhbHVhdGUgdGhlIHJhbmtpbmcgcGVyZm9ybWFuY2UiCm91dHB1dDogaHRtbF9ub3RlYm9vawphdXRob3I6ICJXeXR6ZSBWbGlldHN0cmEiCmRhdGU6ICdgciBmb3JtYXQoU3lzLkRhdGUoKSwgIiVkLSVtLSVZIilgJwotLS0KCiMgSW50cm9kdWN0aW9uCgpIZXJlLCB3ZSBldmFsdWF0ZSBob3cgb3VyIGdlbmUgY2FuZGlkYXRlIHByaW9yaXRpemF0aW9uIG1ldGhvZCBwZXJmb3Jtcy4gCldlIGNvbXBhcmUgaXRzIHBlcmZvcm1hbmNlIHRvIHR3byBiYXNlbGluZXM6IDEpIHdoZW4gYSByYW5kb20gZ2VuZSBpcyBjaG9zZW4sIGFuZCAyKSB3aGVuIHRoZSBjbG9zZXN0IGdlbmUgaXMgY2hvc2VuLgpCZWNhdXNlIGEgc2luZ2xlIFNOUCBjYW4gdGFyZ2V0IG11bHRpcGxlIGdlbmVzLCB3ZSB1c2UgdGhlIG1lYW4gYXZlcmFnZSBwcmVjaXNpb24gYXMgYW4gZXZhbHVhdGlvbiBtZXRyaWMgdG8gY29tcGFyZSB0aGUgcmFua2luZ3MuCgojIFRyYW5zZm9ybSB0aGUgcHJlZGljdGlvbnMgdG8gdGhlIHByb3BlciBmb3JtYXQKCmBgYHtyfQpyZXF1aXJlKHJqc29uKQpsb2FkKCJNb2RlbCIpCmNhbmRpZGF0ZXMgPSByZWFkLmNzdjIoIlJhdyBkYXRhIGZpbGVzL0dlbmVzIGFuZCBnZW5lIGNhbmRpZGF0ZXMgaWRlbnRpZmllZCBvbiAyOC0wNi0yMDE5LmNzdiIsIHN0cmluZ3NBc0ZhY3RvcnMgPSBGKQpmZWF0dXJlcyA9IGFzLmRhdGEuZnJhbWUoZnJlYWQoIlJhdyBkYXRhIGZpbGVzL0NvbXBsZXRlIGZlYXR1cmUgc2V0IGdlbmVyYXRlZCBvbiAyOC0wNi0yMDE5LmNzdiIpKQoKc2NvcmVzID0gYWdncmVnYXRlKGxpc3Qoc2NvcmUgPSBtb2RlbCRwcmVkJFRhcmdldCksIGJ5ID0gbGlzdChyb3dJbmRleCA9IG1vZGVsJHByZWQkcm93SW5kZXgpLCBtZWFuKQpzY29yZXMgPSBzY29yZXNbb3JkZXIoc2NvcmVzJHJvd0luZGV4KSwgLXdoaWNoKGNvbG5hbWVzKHNjb3JlcykgPT0gInJvd0luZGV4IildCnNjb3JlcyA9IGRhdGEuZnJhbWUoR2VuZSA9IGZlYXR1cmVzJE5hbWUsIHNjb3JlID0gc2NvcmVzKQoKc25wcyA9IHVuaXF1ZShjYW5kaWRhdGVzJFNOUC5JRCkKcHJlZGljdGlvbnMgPSBsaXN0KCkKZm9yKGkgaW4gc2VxX2Fsb25nKHNucHMpKXsKICBzbnBfY2FuZGlkYXRlcyA9IHVuaXF1ZSh1bmxpc3QobGFwcGx5KGNhbmRpZGF0ZXMkQ2FuZGlkYXRlX2dlbmVzW2NhbmRpZGF0ZXMkU05QLklEID09IHNucHNbaV1dLCBmcm9tSlNPTikpKQogIHJhbmtlZF9nZW5lcyA9IHNjb3Jlc1tzY29yZXMkR2VuZSAlaW4lIHNucF9jYW5kaWRhdGVzLCBdCiAgcmFua2VkX2dlbmVzID0gcmFua2VkX2dlbmVzW29yZGVyKC1yYW5rZWRfZ2VuZXMkc2NvcmUpLF0KICByYW5rZWRfZ2VuZXMkQ2xhc3MgPSBpZmVsc2UocmFua2VkX2dlbmVzJEdlbmUgJWluJSBjYW5kaWRhdGVzJFRhcmdldF9HZW5lW2NhbmRpZGF0ZXMkU05QLklEID09IHNucHNbaV1dLCAiVGFyZ2V0IiwgIk5vblRhcmdldCIpCiAgcHJlZGljdGlvbnNbW3NucHNbaV1dXSA9IHJhbmtlZF9nZW5lcwp9CmBgYAoKIyBTZXQgYmFzZWxpbmVzCgpGaXJzdCwgd2UgY2FsY3VsYXRlIHRoZSBiYXNlbGluZSBwZXJmb3JtYW5jZXMgYWdhaW5zdCB3aGljaCB3ZSBjb21wYXJlIG91ciBwZXJmb3JtYW5jZS4KCiMjIFJhbmRvbQoKYGBge3IgcmFuZG9tfQpzYW1wbGluZ19yZXBlYXRzID0gMTAwCm1lYW5fc2FtcGxlZF9yYW5rcyA9IHJlcChOQSwgdGltZXMgPSBsZW5ndGgocHJlZGljdGlvbnMpKQpmb3IoaSBpbiBzZXFfYWxvbmcocHJlZGljdGlvbnMpKXsKICBzYW1wbGVkX3JhbmtzID0gYygpCiAgaWYoIlRhcmdldCIgJWluJSBwcmVkaWN0aW9uc1tbaV1dJENsYXNzKXsKICAgIGZvcihqIGluIDE6c2FtcGxpbmdfcmVwZWF0cyl7CiAgICAgIHNhbXBsZWRfcmFua3MgPSBhcHBlbmQoc2FtcGxlZF9yYW5rcywgc2FtcGxlKHNlcSgxLCBucm93KHByZWRpY3Rpb25zW1tpXV0pKSwgc2l6ZSA9IGxlbmd0aCh3aGljaChwcmVkaWN0aW9uc1tbaV1dJENsYXNzID09ICJUYXJnZXQiKSkpKQogICAgfQogICAgbWVhbl9zYW1wbGVkX3JhbmtzW2ldID0gbWVhbihzYW1wbGVkX3JhbmtzKQogIH0KfQptZWFuKG5hLm9taXQobWVhbl9zYW1wbGVkX3JhbmtzKSkKYGBgCgpJZiB3ZSB3b3VsZCByYW5kb21seSBvcmRlciB0aGUgZ2VuZXMsIHdlIHdvdWxkIGFjaGlldmUgYSBtZWFuIGF2ZXJhZ2UgcHJlY2lzaW9uIG9mLiAgCgojIyBDbG9zZXN0CgpgYGB7ciBjbG9zZXN0fQpyYW5rc19jbG9zZXN0ID0gYygpCmZvcihpIGluIDE6bnJvdyhjYW5kaWRhdGVzKSl7CiAgcmFua3NfY2xvc2VzdCA9IGFwcGVuZChyYW5rc19jbG9zZXN0LCB3aGljaChmcm9tSlNPTihjYW5kaWRhdGVzJENhbmRpZGF0ZXNTb3J0ZWRPbkRpc3RhbmNlW2ldKSA9PSBjYW5kaWRhdGVzJFRhcmdldF9HZW5lW2ldKSkKfQpgYGAKCiMjIERFUElDVAoKYGBge3IgZGVwaWN0fQpkZXBpY3QgPSByZWFkLmRlbGltKCJERVBJQ1QgcmVzdWx0cy9Qcm9zdGF0ZV9DYW5jZXJfZ2VuZXByaW9yaXRpemF0aW9uLnR4dCIsIHN0cmluZ3NBc0ZhY3RvcnMgPSBGKQoKCmBgYAoKIyBFdmFsdWF0ZSBvdXIgcHJlZGljdGlvbnMKCmBgYHtyfQpyYW5rcyA9IGMoKQpmb3IoaSBpbiBzZXFfYWxvbmcocHJlZGljdGlvbnMpKXsKICBpZigiVGFyZ2V0IiAlaW4lIHByZWRpY3Rpb25zW1tpXV0kQ2xhc3MpewogICAgcmFua3MgPSBhcHBlbmQocmFua3MsIHdoaWNoKHByZWRpY3Rpb25zW1tpXV0kQ2xhc3MgPT0gIlRhcmdldCIpKQogIH0KfQoKYGBgCgojIENvbmNsdXNpb24KCiMgVXNlZCBwYWNrYWdlcyBhbmQgUi12ZXJzaW9uCgpgYGB7ciwgZWNobyA9IEZ9CnNlc3Npb25JbmZvKCkKYGBg</div>
 
 
 

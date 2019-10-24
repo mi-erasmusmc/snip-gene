@@ -5,7 +5,7 @@ fold_change_cutoff : 0.1
 FDR_cutoff : 0.01
 proteinOnly : TRUE
 getFromKG : FALSE
-generatePredicateFeatures : TRUE
+generatePredicateFeatures : FALSE
 recalculateNetwork : FALSE
 long : FALSE
 betweenness_cluster : FALSE

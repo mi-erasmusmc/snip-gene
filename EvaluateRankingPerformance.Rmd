@@ -5,8 +5,6 @@ author: "Wytze Vlietstra"
 date: '`r format(Sys.Date(), "%d-%m-%Y")`'
 ---
 
-#TODO: Aggregeren op SNPs, aangezien die soms meerdere genes targeten. Daar apart de MAP voor berekenen.
-
 # Introduction
 
 Here, we evaluate how our gene candidate prioritization method performs. 
@@ -16,25 +14,23 @@ Because a single SNP can target multiple genes, we use the mean average precisio
 # Transform the predictions to the proper format
 
 ```{r}
+require(rjson)
 load("Model")
-candidates = read.csv2("Raw data files/", stringsAsFactors = F)
-features = read.csv("Raw data files/", stringsAsFactors = F)
+candidates = read.csv2("Raw data files/Genes and gene candidates identified on 28-06-2019.csv", stringsAsFactors = F)
+features = as.data.frame(fread("Raw data files/Complete feature set generated on 28-06-2019.csv"))
 
 scores = aggregate(list(score = model$pred$Target), by = list(rowIndex = model$pred$rowIndex), mean)
-scores = scores[order(scores$rowIndex), ]
-scores$Name = features$Name
+scores = scores[order(scores$rowIndex), -which(colnames(scores) == "rowIndex")]
+scores = data.frame(Gene = features$Name, score = scores)
 
 snps = unique(candidates$SNP.ID)
-reference = list()
-for(i in seq_along(snps)){
-  reference[snps[i]] = candidates$Name[candidates$SNP.ID == snps[i]]
-}
-
 predictions = list()
-for(i in 1:nrow(candidates)){
-  ranked_genes = scores[scores$Name %in% candidates$Candidates, ]
-  ranked_genes = ranked_genes[order(-ranked_genes$scores),]
-  predictions[candidates$SNP.ID] = ranked_genes$Name
+for(i in seq_along(snps)){
+  snp_candidates = unique(unlist(lapply(candidates$Candidate_genes[candidates$SNP.ID == snps[i]], fromJSON)))
+  ranked_genes = scores[scores$Gene %in% snp_candidates, ]
+  ranked_genes = ranked_genes[order(-ranked_genes$score),]
+  ranked_genes$Class = ifelse(ranked_genes$Gene %in% candidates$Target_Gene[candidates$SNP.ID == snps[i]], "Target", "NonTarget")
+  predictions[[snps[i]]] = ranked_genes
 }
 ```
 
@@ -45,20 +41,50 @@ First, we calculate the baseline performances against which we compare our perfo
 ## Random
 
 ```{r random}
-average_random_probabilities = lapply(predictions, function(x){length(x)/sum(x)})
-MAP_random = mean(unlist(average_random_probabilities))
+sampling_repeats = 100
+mean_sampled_ranks = rep(NA, times = length(predictions))
+for(i in seq_along(predictions)){
+  sampled_ranks = c()
+  if("Target" %in% predictions[[i]]$Class){
+    for(j in 1:sampling_repeats){
+      sampled_ranks = append(sampled_ranks, sample(seq(1, nrow(predictions[[i]])), size = length(which(predictions[[i]]$Class == "Target"))))
+    }
+    mean_sampled_ranks[i] = mean(sampled_ranks)
+  }
+}
+mean(na.omit(mean_sampled_ranks))
 ```
 
-If we would randomly order the genes, we would achieve a mean average precision of `r round(MAP_random, 3)`. 
+If we would randomly order the genes, we would achieve a mean average precision of.  
 
 ## Closest
 
 ```{r closest}
+ranks_closest = c()
+for(i in 1:nrow(candidates)){
+  ranks_closest = append(ranks_closest, which(fromJSON(candidates$CandidatesSortedOnDistance[i]) == candidates$Target_Gene[i]))
+}
+```
+
+## DEPICT
+
+```{r depict}
+depict = read.delim("DEPICT results/Prostate_Cancer_geneprioritization.txt", stringsAsFactors = F)
 
 
 ```
 
 # Evaluate our predictions
+
+```{r}
+ranks = c()
+for(i in seq_along(predictions)){
+  if("Target" %in% predictions[[i]]$Class){
+    ranks = append(ranks, which(predictions[[i]]$Class == "Target"))
+  }
+}
+
+```
 
 # Conclusion
 
