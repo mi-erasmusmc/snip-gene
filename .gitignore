@@ -5,3 +5,6 @@
 Raw data files/*
 GeneExpressionData/*
 SNP-Gene.Rproj
+.DS_Store
+*/.DS_Store
+Execution_config.yml
