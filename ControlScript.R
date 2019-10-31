@@ -29,3 +29,4 @@ farashi_final = farashi_final[farashi_final$TargetGeneOnChromosome == T, ]
 
 # Create the final feature set
 source("createFeatureSet.R")
+source("createFeatureSetOfClosestGenes.R")

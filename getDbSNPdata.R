@@ -104,7 +104,14 @@ for(i in 1:nrow(farashi_final)){
   farashi_final[i, "TargetGeneOnChromosome"] = ifelse(farashi_final$Target_Gene[i] %in% chromosome_candidates$Name, T, F)
   chromosome_candidates = chromosome_candidates[chromosome_candidates$Overlap > 0, ]
   chromosome_candidates$Distance = apply(chromosome_candidates[,c("Gene.start..bp.", "Gene.end..bp.")], 1, function(x){min(abs(x - farashi_final$BP[i]))})
-  farashi_final[i, "CandidatesSortedOnDistance"] = toJSON(unique(chromosome_candidates$Name[order(chromosome_candidates$Distance)]))
+  chromosome_candidates = chromosome_candidates[order(chromosome_candidates$Distance), ]
+  farashi_final[i, "CandidatesSortedOnDistance"] = toJSON(unique(chromosome_candidates$Name))
+  farashi_final[i, "DistanceRankTargetGene"] = ifelse(farashi_final$Target_Gene[i] %in% chromosome_candidates$Name,
+                                                      which(chromosome_candidates$Name == farashi_final$Target_Gene[i]),
+                                                      NA)
+  farashi_final[i, "DistanceToTargetGene"] = ifelse(farashi_final$Target_Gene[i] %in% chromosome_candidates$Name,
+                                                    chromosome_candidates$Distance[which(chromosome_candidates$Name == farashi_final$Target_Gene[i])],
+                                                      NA)
 }
 
 write.csv2(farashi_final, paste0("Raw data files/Genes and gene candidates identified on ", todays_date, ".csv"), row.names = F)

@@ -1,0 +1,76 @@
+---
+title: "Distances between the SNPs and the genes that they target"
+author: "Wytze Vlietstra"
+date: '`r format(Sys.Date(), "%d-%m-%Y")`'
+output:
+  html_document: default
+  html_notebook: default
+---
+
+```{r, echo = F, message = F, results = "hide"}
+require(knitr)
+options(scipen = 999)
+```
+
+# Introduction
+
+Analysis of the input set.
+
+Questions:
+
+* How many of the targeted genes are not the closest gene
+* What is the average distance of these genes?
+
+# Load the data
+
+```{r}
+snps = read.csv2("Raw data files/Genes and gene candidates identified on 31-10-2019.csv", stringsAsFactors = F)
+
+# Select only genes that can actually be found
+snps = snps[snps$TargetGeneOnChromosome == T, ]
+```
+
+# Ranks
+
+Based on distance alone, the target genes are located at the following ranks:
+
+`r kable(table(snps$DistanceRankTargetGene, dnn = list("Rank")))`
+
+# Distances
+
+First, I show a histogram of all distances.
+
+```{r, echo = F}
+hist(log10(snps$DistanceToTargetGene), main = "Histogram of the distance of the SNPS to their target gene", xlab = "Number of basepairs distance in log 10", breaks = 16)
+```
+
+The different values are shown at different cutoffs:
+
+`r kable(round(quantile(snps$DistanceToTargetGene, probs = seq(0, 1, 0.1))), col.names = "Distance")`
+
+The mean difference is `r round(mean(snps$DistanceToTargetGene))`.
+
+Next, I show a histogram of the distances for all genes that are not the closest gene.
+
+```{r, echo = F}
+hist(log10(snps$DistanceToTargetGene[snps$DistanceRankTargetGene > 1]), main = "Histogram of the distance of the SNPS to their target gene\nclosest gene excluded", xlab = "Number of basepairs distance in log 10", breaks = 10)
+```
+
+The different values are shown at different cutoffs:
+
+`r kable(round(quantile(snps$DistanceToTargetGene[snps$DistanceRankTargetGene > 1], probs = seq(0, 1, 0.1))), col.names = "Distance")`
+
+The mean difference is `r round(mean(snps$DistanceToTargetGene[snps$DistanceRankTargetGene > 1]))`.
+
+# Suggested distances:
+
+Based on the results above, I suggest the following distances to experiment with:
+
+* 10000
+* 25000
+* 100000
+* 250000
+* 500000
+* 1000000
+* 1500000
+* 2000000
